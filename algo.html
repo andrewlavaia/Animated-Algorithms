@@ -22,15 +22,26 @@
 						<td><input type="text" name="sort-integer-range"></td>
 					</tr>
 					<tr>
-						<td> Animation Time (in milliseconds): </td>
+						<td>Animation Time (in milliseconds): </td>
 						<td> <input type="text" name="sort-animation-time"></td>
+					</tr>
+					<tr>
+						<td>Sorting Algorithm:</td>
+						<td> 
+							<select name="sort-select">
+							  <option value="selectionSort">Selection Sort</option>
+							  <option value="insertionSort">Insertion Sort</option>
+							  <option value="mergeSort">Merge Sort</option>
+							</select>
+						</td>
 					</tr>
 					<tr>
 						<td></td>
 						<td><input type="button" name="sort-begin" value="Begin Sort"></td>
 					</tr>
 				</table>
-		        <canvas id="myChart" width="600" height="300"></canvas>
+		        <canvas id="sort-chart" width="600" height="300"></canvas>
+		        <!--<progress id="animationProgress" max="1" value="0" style="width: 600px"></progress>-->
 		    </div>
 	    </div>
 

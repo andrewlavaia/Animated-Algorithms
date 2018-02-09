@@ -5,14 +5,16 @@
 
 // create a global queue for animations
 var animationQueue = []; // n^2 Memory requirement
+var intervalTimer; 
 
 // ----------------
 // Draw Chart
 // ----------------
 // Chart.js functions
-var ctx = document.getElementById("myChart");
+// var progress = document.getElementById('animationProgress');
+var ctx = document.getElementById("sort-chart");
 Chart.defaults.global.elements.rectangle.backgroundColor = 'rgba(54, 162, 235, 1)';
-var myChart = new Chart(ctx, {
+var chart = new Chart(ctx, {
   type: 'bar',
 		data: {
     labels: [0,1,2],
@@ -22,6 +24,9 @@ var myChart = new Chart(ctx, {
     }],
   },
   options: {
+   	animation: {
+			duration: 0,
+		},
   	legend: {
   		display: false,
   	},
@@ -46,14 +51,16 @@ var myChart = new Chart(ctx, {
 
 
 $('input[name="sort-begin"]').on('click', function() {
+	console.log($('select[name="sort-select"]').val());
 	callSort(
 		parseInt($('input[name="sort-array-size"]').val(), 10), 
 		parseInt($('input[name="sort-integer-range"]').val(), 10), 
-		parseInt($('input[name="sort-animation-time"]').val(), 10));
+		parseInt($('input[name="sort-animation-time"]').val(), 10),
+		$('select[name="sort-select"]').val());
 });
 
 
-function callSort(arrSize, maxIntSize, pauseTime) {
+function callSort(arrSize, maxIntSize, pauseTime, sortAlgo) {
 
 	// Create an array and populate it with random values
 	var arr = [];
@@ -67,20 +74,31 @@ function callSort(arrSize, maxIntSize, pauseTime) {
 	  labels.push(i);
 	}
 
-	// set initial chart values
-	myChart.data.datasets[0].data = arr;
-	myChart.data.labels = labels;
-	myChart.options.scales.yAxes[0].ticks.max = maxIntSize;
-	myChart.update();
+	animationQueue.length = 0; // clear existing animation queue
+	clearInterval(intervalTimer); // clear previous timer if set
 
-	mergeSort(arr);
-	drawChart(pauseTime);
+
+	// set initial chart values
+	chart.data.datasets[0].data = arr;
+	chart.data.labels = labels;
+	chart.options.scales.yAxes[0].ticks.max = maxIntSize;
+	//chart.options.animation.onProgress = onProg(animation);
+	chart.update();
+
+	if (sortAlgo == "selectionSort")
+		selectionSort(arr);
+	else if (sortAlgo == "insertionSort")
+		insertionSort(arr);
+	else if (sortAlgo == "mergeSort")
+		mergeSort(arr);
+	
+	intervalTimer = drawChart(pauseTime);
 
 }
 
 
 // -----------------
-// Generic Sorting
+// Generic Sorting Functions
 // -----------------
 function isSorted(array) {
 	var n = array.length;
@@ -100,15 +118,25 @@ function swap(array, a, b) {
 
 
 function drawChart(pauseTime) {
-	setInterval(function() {
+	return setInterval(function() {
 		if (animationQueue.length > 0) {
-			myChart.data.datasets[0].data = animationQueue.shift();
-			myChart.update();
+			chart.data.datasets[0].data = animationQueue.shift();
+			chart.update();
 		}
 	}, pauseTime);
 }
 
-	
+/*
+function onProg(animation) {
+  progress.value = animation.currentStep / animation.numSteps;
+}
+
+function onComp(animation) {
+    window.setTimeout(function() {
+        progress.value = 0;
+    }, 2000);
+  }
+*/
 
 // ----------------
 // Selection Sort
@@ -124,7 +152,8 @@ function selectionSort(array) {
 		for (var j = i + 1; j < n; j++) {
 			if (array[j] < array[min]) {
 				min = j;
-			}				
+			}
+			animationQueue.push(array.slice()); // push a copy of the array into the queue				
 		}
 		swap(array, i, min);
 	}
@@ -145,6 +174,7 @@ function insertionSort(array) {
 		for(var j = i; j > 0; j--) {
 			if (array[j] < array[j - 1]) {
 				swap(array, j, j - 1);
+				animationQueue.push(array.slice()); // push a copy of the array into the queue
 			}
 		}
 	}
