@@ -1,13 +1,22 @@
 // User Inputted Values
-var arrSize = 10;
+var arrSize = 1000;
 var maxIntSize = 100;
-
+var pauseTime = 1;
 
 // Create an array and populate it with random values
 var arr = [];
 for (var i = 0; i < arrSize; i++) {
   arr.push(Math.round(Math.random() * maxIntSize)); // 0 through maxIntSize - 1
 }
+
+// create labels for chart.js
+var labels = [];
+for (var i = 0; i < arrSize; i++) {
+  labels.push(i);
+}
+
+// create a queue for animations
+var animationQueue = [];
 
 // -----------------
 // Generic Sorting
@@ -27,6 +36,59 @@ function swap(array, a, b) {
 	array[b] = array[a];
 	array[a] = temp;
 }
+
+
+// ----------------
+// Draw Chart
+// ----------------
+// Chart.js functions
+var ctx = document.getElementById("myChart");
+Chart.defaults.global.elements.rectangle.backgroundColor = 'rgba(54, 162, 235, 1)';
+var myChart = new Chart(ctx, {
+  type: 'bar',
+		data: {
+    labels: labels,
+    datasets: [{
+        label: '',
+        data: arr,
+    }],
+  },
+  options: {
+  	legend: {
+  		display: false,
+  	},
+  	responsive: false,
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true,
+                max: maxIntSize,
+            }
+        }]
+    },
+    title: {
+    	display: false,
+    	text: "",
+    },
+    tooltips: {
+    	enabled: false,
+    },
+  },
+});
+
+function drawChart() {
+	setInterval(function() {
+		if (animationQueue.length > 0) {
+			myChart.data.datasets[0].data = animationQueue.shift();
+			myChart.update();
+		}
+	}, pauseTime);
+}
+
+mergeSort(arr);
+drawChart();
+
+	
 
 // ----------------
 // Selection Sort
@@ -73,8 +135,60 @@ function insertionSort(array) {
 // ----------------
 // Merge Sort
 // ----------------
-function mergeSort(array) {
+// Split array into a left and right array and recursively sort and merge
+// the smaller sub-arrays
+// Speed: nlgn always
+// Memory: extra memory required from temporary array that gets copied
+function merge(array, lo, mid, hi) {
+	var i = lo;
+	var j = mid + 1;
+
+	// copy array to aux
+	for (var k = lo; k <= hi; k++) { 
+		aux[k] = array[k];
+	}
+
+	for (var k = lo; k <= hi; k++) {
+		// entire first half exhausted
+		if (i > mid) {
+			array[k] = aux[j];
+			j++;
+		} 
+		// entire second half exhausted
+		else if (j > hi) {
+			array[k] = aux[i];
+			i++;
+		}
+		// value from second half is lower
+		else if (aux[j] < aux[i]) {
+			array[k] = aux[j];
+			j++;
+		}
+		// value from first half is equal or lower
+		else {
+			array[k] = aux[i];
+			i++;
+		}
+		animationQueue.push(array.slice()); // push a copy of the array into the queue
+	}
+}
 	
+// recursive sort
+function mSort(array, lo, hi) {
+	if (hi <= lo) {
+		return;
+	} else {
+		var mid = Math.floor(lo + (hi - lo)/2);
+		mSort(array, lo, mid);
+		mSort(array, mid + 1, hi);
+		merge(array, lo, mid, hi);
+	}
+}
+
+function mergeSort(array) {
+	aux = new Array(array.length);
+	mSort(array, 0, array.length - 1);
+	return array;
 }
 
 
