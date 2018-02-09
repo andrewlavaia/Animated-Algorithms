@@ -9,18 +9,35 @@
 	</head>
 
 	<body>
-		<div id="wrapper">
-	        <canvas id="myChart" width="600" height="300"></canvas>
+		<div id="page-wrapper">
+			<div id="sort-wrapper">
+				<h2> Array Sorting </h2>
+				<table>
+					<tr>
+						<td>Size of Array:</td>
+						<td><input type="text" name="sort-array-size"></td>
+					</tr>
+					<tr>
+						<td>Range of Integers:</td>
+						<td><input type="text" name="sort-integer-range"></td>
+					</tr>
+					<tr>
+						<td> Animation Time (in milliseconds): </td>
+						<td> <input type="text" name="sort-animation-time"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><input type="button" name="sort-begin" value="Begin Sort"></td>
+					</tr>
+				</table>
+		        <canvas id="myChart" width="600" height="300"></canvas>
+		    </div>
 	    </div>
 
  		<script src="./jquery-3.3.1.min.js"></script>
  		<script src="./chart.js"></script>
 	    <script src="./util.js"></script>
         <script src="./sorts.js"></script>
-
-<script>
-
-</script>
 
 	</body>
 </html>

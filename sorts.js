@@ -1,22 +1,83 @@
 // User Inputted Values
-var arrSize = 1000;
-var maxIntSize = 100;
-var pauseTime = 1;
+//var arrSize = parseInt(100, 10);
+//var maxIntSize = parseInt(100, 10);
+//var pauseTime = parseInt(1000, 10);
 
-// Create an array and populate it with random values
-var arr = [];
-for (var i = 0; i < arrSize; i++) {
-  arr.push(Math.round(Math.random() * maxIntSize)); // 0 through maxIntSize - 1
+// create a global queue for animations
+var animationQueue = []; // n^2 Memory requirement
+
+// ----------------
+// Draw Chart
+// ----------------
+// Chart.js functions
+var ctx = document.getElementById("myChart");
+Chart.defaults.global.elements.rectangle.backgroundColor = 'rgba(54, 162, 235, 1)';
+var myChart = new Chart(ctx, {
+  type: 'bar',
+		data: {
+    labels: [0,1,2],
+    datasets: [{
+        label: '',
+        data: [0,1,2],
+    }],
+  },
+  options: {
+  	legend: {
+  		display: false,
+  	},
+  	responsive: false,
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true,
+                max: 2,
+            }
+        }]
+    },
+    title: {
+    	display: false,
+    	text: "",
+    },
+    tooltips: {
+    	enabled: false,
+    },
+  },
+});
+
+
+$('input[name="sort-begin"]').on('click', function() {
+	callSort(
+		parseInt($('input[name="sort-array-size"]').val(), 10), 
+		parseInt($('input[name="sort-integer-range"]').val(), 10), 
+		parseInt($('input[name="sort-animation-time"]').val(), 10));
+});
+
+
+function callSort(arrSize, maxIntSize, pauseTime) {
+
+	// Create an array and populate it with random values
+	var arr = [];
+	for (var i = 0; i < arrSize; i++) {
+	  arr.push(Math.round(Math.random() * maxIntSize)); // 0 through maxIntSize - 1
+	}
+
+	// create labels for chart.js
+	var labels = [];
+	for (var i = 0; i < arrSize; i++) {
+	  labels.push(i);
+	}
+
+	// set initial chart values
+	myChart.data.datasets[0].data = arr;
+	myChart.data.labels = labels;
+	myChart.options.scales.yAxes[0].ticks.max = maxIntSize;
+	myChart.update();
+
+	mergeSort(arr);
+	drawChart(pauseTime);
+
 }
 
-// create labels for chart.js
-var labels = [];
-for (var i = 0; i < arrSize; i++) {
-  labels.push(i);
-}
-
-// create a queue for animations
-var animationQueue = [];
 
 // -----------------
 // Generic Sorting
@@ -38,45 +99,7 @@ function swap(array, a, b) {
 }
 
 
-// ----------------
-// Draw Chart
-// ----------------
-// Chart.js functions
-var ctx = document.getElementById("myChart");
-Chart.defaults.global.elements.rectangle.backgroundColor = 'rgba(54, 162, 235, 1)';
-var myChart = new Chart(ctx, {
-  type: 'bar',
-		data: {
-    labels: labels,
-    datasets: [{
-        label: '',
-        data: arr,
-    }],
-  },
-  options: {
-  	legend: {
-  		display: false,
-  	},
-  	responsive: false,
-    scales: {
-        yAxes: [{
-            ticks: {
-                beginAtZero: true,
-                max: maxIntSize,
-            }
-        }]
-    },
-    title: {
-    	display: false,
-    	text: "",
-    },
-    tooltips: {
-    	enabled: false,
-    },
-  },
-});
-
-function drawChart() {
+function drawChart(pauseTime) {
 	setInterval(function() {
 		if (animationQueue.length > 0) {
 			myChart.data.datasets[0].data = animationQueue.shift();
@@ -84,9 +107,6 @@ function drawChart() {
 		}
 	}, pauseTime);
 }
-
-mergeSort(arr);
-drawChart();
 
 	
 
