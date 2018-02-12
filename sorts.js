@@ -4,14 +4,13 @@
 //var pauseTime = parseInt(1000, 10);
 
 // create a global queue for animations
-var animationQueue = []; // n^2 Memory requirement
+var animationQueue = []; // very slow -> n^2 Memory requirement
 var intervalTimer; 
 
 // ----------------
 // Draw Chart
 // ----------------
 // Chart.js functions
-// var progress = document.getElementById('animationProgress');
 var ctx = document.getElementById("sort-chart");
 Chart.defaults.global.elements.rectangle.backgroundColor = 'rgba(54, 162, 235, 1)';
 var chart = new Chart(ctx, {
@@ -82,7 +81,6 @@ function callSort(arrSize, maxIntSize, pauseTime, sortAlgo) {
 	chart.data.datasets[0].data = arr;
 	chart.data.labels = labels;
 	chart.options.scales.yAxes[0].ticks.max = maxIntSize;
-	//chart.options.animation.onProgress = onProg(animation);
 	chart.update();
 
 	if (sortAlgo == "selectionSort")
@@ -91,6 +89,8 @@ function callSort(arrSize, maxIntSize, pauseTime, sortAlgo) {
 		insertionSort(arr);
 	else if (sortAlgo == "mergeSort")
 		mergeSort(arr);
+	else if (sortAlgo == "quickSort")
+		quickSort(arr); 
 	
 	intervalTimer = drawChart(pauseTime);
 
@@ -126,24 +126,13 @@ function drawChart(pauseTime) {
 	}, pauseTime);
 }
 
-/*
-function onProg(animation) {
-  progress.value = animation.currentStep / animation.numSteps;
-}
-
-function onComp(animation) {
-    window.setTimeout(function() {
-        progress.value = 0;
-    }, 2000);
-  }
-*/
 
 // ----------------
 // Selection Sort
 // ----------------
 // Find smallest value and swap it into first position, then find
 // next smallest value and swap it into second position, etc
-// Speed: n^2 always
+// Speed: n^2, lots of compares but minimum swap calls
 // Memory: no extra memory required
 function selectionSort(array) {
 	var n = array.length;
@@ -189,6 +178,24 @@ function insertionSort(array) {
 // the smaller sub-arrays
 // Speed: nlgn always
 // Memory: extra memory required from temporary array that gets copied
+
+function mergeSort(array) {
+	aux = new Array(array.length);
+	mSort(array, 0, array.length - 1);
+	return array;
+}
+
+function mSort(array, lo, hi) { // recursive 
+	if (hi <= lo) {
+		return;
+	} else {
+		var mid = Math.floor(lo + (hi - lo)/2);
+		mSort(array, lo, mid);
+		mSort(array, mid + 1, hi);
+		merge(array, lo, mid, hi);
+	}
+}
+
 function merge(array, lo, mid, hi) {
 	var i = lo;
 	var j = mid + 1;
@@ -222,30 +229,61 @@ function merge(array, lo, mid, hi) {
 		animationQueue.push(array.slice()); // push a copy of the array into the queue
 	}
 }
-	
-// recursive sort
-function mSort(array, lo, hi) {
-	if (hi <= lo) {
-		return;
-	} else {
-		var mid = Math.floor(lo + (hi - lo)/2);
-		mSort(array, lo, mid);
-		mSort(array, mid + 1, hi);
-		merge(array, lo, mid, hi);
-	}
-}
 
-function mergeSort(array) {
-	aux = new Array(array.length);
-	mSort(array, 0, array.length - 1);
-	return array;
-}
 
 
 // ----------------
 // Quick Sort
 // ----------------
+// Partition array into two smaller sub-arrays and move all other
+// items in the array into the correct sub-array depending on whether 
+// they are larger or smaller than the partitioned element. 
+// This procedure is then called recursively on the smaller sub-arrays.
+// Speed: nlgn average, n^2 worst case if already sorted
+// Memory: no extra memory, sorts in place
+
+// Normally would need to shuffle array before hand so that it would eliminate 
+// dependence on input by randomizing the array.
+// This allows the partition element to be first element,
+// rather than having to randomly select parition elements.
+// Shuffles can be performed in O(n) time.
+// Not need in this case since array is already randomized.
 function quickSort(array) {
-	
+	// shuffle(array);
+	qsort(array, 0, array.length - 1);
+	return array;
 }
 
+function qsort(array, lo, hi) { // recursive
+	if (hi <= lo) {
+		return;
+	}
+	var p = partition(array, lo, hi); // p is partition index, placed in proper position 
+	qsort(array, lo, p - 1); // sort left sub-array
+	qsort(array, p + 1, hi)  // sort right sub-array
+}
+
+function partition(array, lo, hi) {
+	var p = array[lo]; // select first element to partition
+	var i = lo+1; // skip partition element
+	var j = hi;
+
+	while (i <= j) { 
+		while (array[i] <= p) { 
+			i++; // element already in correct array, ignore
+		}
+		while (array[j] > p) {
+			j--; // element already in correct sub-array, ignore
+		}
+		if (i < j) { // swap only if indices didn't cross
+			swap(array, i, j);
+			i++; 
+			j--;
+			animationQueue.push(array.slice()); // push a copy of the array into the queue
+		}
+	}
+
+	swap(array, lo, j); // place partitioned element into correct spot
+	animationQueue.push(array.slice()); // push a copy of the array into the queue
+	return j;
+}
