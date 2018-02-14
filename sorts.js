@@ -1,8 +1,3 @@
-// User Inputted Values
-//var arrSize = parseInt(100, 10);
-//var maxIntSize = parseInt(100, 10);
-//var pauseTime = parseInt(1000, 10);
-
 // create a global queue for animations
 var animationQueue = []; // very slow -> n^2 Memory requirement
 var intervalTimer; 
@@ -18,8 +13,11 @@ var chart = new Chart(ctx, {
 		data: {
     labels: [0,1,2],
     datasets: [{
-        label: '',
-        data: [0,1,2],
+      data: [0,1,2],
+      xAxisID: "bar-x-axis1",
+    }, {
+    	data: [0,0,0],
+    	xAxisID: "bar-x-axis1",
     }],
   },
   options: {
@@ -31,12 +29,16 @@ var chart = new Chart(ctx, {
   	},
   	responsive: false,
     scales: {
+    		xAxes: [{
+    			stacked: true,
+    			id: 'bar-x-axis1',
+    		}],
         yAxes: [{
-            ticks: {
-                beginAtZero: true,
-                max: 2,
-            }
-        }]
+          ticks: {
+            beginAtZero: true,
+            max: 10,
+          }
+        }],
     },
     title: {
     	display: false,
@@ -50,7 +52,6 @@ var chart = new Chart(ctx, {
 
 
 $('input[name="sort-begin"]').on('click', function() {
-	console.log($('select[name="sort-select"]').val());
 	callSort(
 		parseInt($('input[name="sort-array-size"]').val(), 10), 
 		parseInt($('input[name="sort-integer-range"]').val(), 10), 
@@ -73,12 +74,19 @@ function callSort(arrSize, maxIntSize, pauseTime, sortAlgo) {
 	  labels.push(i);
 	}
 
+	// Used for supplmental animations on certain algorithms
+	var suppArray = newFilledArray(arrSize, 0); // supplemental array filled with zeroes
+	suppArray.push('s'); // needed for drawChart()
+
 	animationQueue.length = 0; // clear existing animation queue
 	clearInterval(intervalTimer); // clear previous timer if set
-
+	animationQueue.push(arr.slice()); // load initial unsorted array 
 
 	// set initial chart values
 	chart.data.datasets[0].data = arr;
+	chart.data.datasets[1].data = suppArray;
+	chart.data.datasets[0].backgroundColor = 'rgba(54, 162, 235, .6)';
+	chart.data.datasets[1].backgroundColor = 'rgba(230, 100, 100, 1)';
 	chart.data.labels = labels;
 	chart.options.scales.yAxes[0].ticks.max = maxIntSize;
 	chart.update();
@@ -119,10 +127,18 @@ function swap(array, a, b) {
 
 function drawChart(pauseTime) {
 	return setInterval(function() {
+
 		if (animationQueue.length > 0) {
-			chart.data.datasets[0].data = animationQueue.shift();
+			var last = animationQueue[0].length - 1;
+			if (animationQueue[0][last] == 's') { // check if supplemental animation
+				animationQueue[0].pop(); // remove the 's'
+				chart.data.datasets[1].data = animationQueue.shift();
+			} else {
+				chart.data.datasets[0].data = animationQueue.shift();
+			}
 			chart.update();
 		}
+		
 	}, pauseTime);
 }
 
@@ -136,16 +152,25 @@ function drawChart(pauseTime) {
 // Memory: no extra memory required
 function selectionSort(array) {
 	var n = array.length;
+
+	var supp = newFilledArray(n, 0); 			  // animation purposes only
+	supp.push('s'); 												// animation purposes only
+
 	for (var i = 0; i < n; i++) {
 		var min = i;
 		for (var j = i + 1; j < n; j++) {
 			if (array[j] < array[min]) {
 				min = j;
 			}
-			animationQueue.push(array.slice()); // push a copy of the array into the queue				
+			supp[j] = array[j]; 								 // animation purposes only
+			animationQueue.push(supp.slice());	 // animation purposes only 	
+			supp[j] = 0;												 // animation purposes only
 		}
 		swap(array, i, min);
+		animationQueue.push(array.slice()); 	 // animation purposes only
 	}
+
+	animationQueue.push(supp.slice()); 			 // animation purposes only
 	return array;
 }
 
@@ -159,14 +184,20 @@ function selectionSort(array) {
 // Memory: no extra memory required
 function insertionSort(array) {
 	var n = array.length;
+
+	var supp = newFilledArray(n, 0); 			  // animation purposes only
+	supp.push('s'); 												// animation purposes only
+
 	for (var i = 1; i < n; i++) {
-		for(var j = i; j > 0; j--) {
-			if (array[j] < array[j - 1]) {
-				swap(array, j, j - 1);
-				animationQueue.push(array.slice()); // push a copy of the array into the queue
-			}
+		for(var j = i; j > 0 && array[j] < array[j-1]; j--) {
+			supp[j] = array[j]; 								 // animation purposes only
+			animationQueue.push(supp.slice());	 // animation purposes only 	
+			supp[j] = 0;												 // animation purposes only
+			swap(array, j, j - 1);
+			animationQueue.push(array.slice());  // animation purposes only
 		}
 	}
+	animationQueue.push(supp.slice());	 		 // animation purposes only 
 	return array;
 }
 
@@ -197,37 +228,49 @@ function mSort(array, lo, hi) { // recursive
 }
 
 function merge(array, lo, mid, hi) {
+	var supp = newFilledArray(array.length, 0); // animation purposes only
+	supp.push('s'); 														// animation purposes only
+
 	var i = lo;
 	var j = mid + 1;
 
 	// copy array to aux
 	for (var k = lo; k <= hi; k++) { 
 		aux[k] = array[k];
+		supp[k] = array[k];												// animation purposes only
 	}
 
 	for (var k = lo; k <= hi; k++) {
 		// entire first half exhausted
 		if (i > mid) {
 			array[k] = aux[j];
+			supp[k] = aux[j];												// animation purposes only
 			j++;
 		} 
 		// entire second half exhausted
 		else if (j > hi) {
 			array[k] = aux[i];
+			supp[k] = aux[i];												// animation purposes only
 			i++;
 		}
 		// value from second half is lower
 		else if (aux[j] < aux[i]) {
 			array[k] = aux[j];
+			supp[k] = aux[j];												// animation purposes only
 			j++;
 		}
 		// value from first half is equal or lower
 		else {
 			array[k] = aux[i];
+			supp[k] = aux[i];												// animation purposes only	
 			i++;
 		}
-		animationQueue.push(array.slice()); // push a copy of the array into the queue
+		animationQueue.push(supp.slice()); 				// animation purposes only
 	}
+	animationQueue.push(array.slice()); 				// animation purposes only
+	supp = newFilledArray(array.length, 0); 		// animation purposes only
+	supp.push('s'); 														// animation purposes only
+	animationQueue.push(supp.slice()); 				  // animation purposes only
 }
 
 
@@ -264,8 +307,9 @@ function qsort(array, lo, hi) { // recursive
 }
 
 function partition(array, lo, hi) {
-	var p = array[lo]; // select first element to partition
-	var i = lo+1; // skip partition element
+	var p = array[lo]; // select first element to partition 
+										 // array must be randomly ordered or shuffled initially
+	var i = lo + 1; // skip partition element
 	var j = hi;
 
 	while (i <= j) { 
