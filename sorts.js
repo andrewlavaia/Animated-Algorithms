@@ -95,6 +95,8 @@ function callSort(arrSize, maxIntSize, pauseTime, sortAlgo) {
 		selectionSort(arr);
 	else if (sortAlgo == "insertionSort")
 		insertionSort(arr);
+	else if (sortAlgo == "shellSort")
+		shellSort(arr);
 	else if (sortAlgo == "mergeSort")
 		mergeSort(arr);
 	else if (sortAlgo == "quickSort")
@@ -200,6 +202,45 @@ function insertionSort(array) {
 	animationQueue.push(supp.slice());	 		 // animation purposes only 
 	return array;
 }
+
+// ----------------
+// Shell Sort
+// ----------------
+// Optimization of insertion sort that initially allows swaps between 
+// non-adjacent items. Quickly pre-sorts the array to be mostly sorted
+// and then applies insertion sort.
+// Speed: n for small or mostly sorted arrays, n^(3/2) in worst case
+// Memory: no extra memory required
+function shellSort(array) {
+	var n = array.length;
+	var h = 1;
+
+	var supp = newFilledArray(n, 0); 			  // animation purposes only
+	supp.push('s'); 												// animation purposes only
+
+	// find highest reasonable h value
+	while (h < n) {
+		h = (h * 3) + 1;	// 1, 4, 13, 40, 121, 364 ....
+	}
+	while (h >= 1) {
+		for (var i = h; i < n; i++) {
+			for (var j = i; j >= h && array[j] < array[j - h]; j = j - h) {
+				supp[j] = array[j];									// animation purposes only
+				supp[j - h] = array[j-h];						// animation purposes only
+				animationQueue.push(supp.slice());	// animation purposes only
+				supp[j] = 0;												// animation purposes only	
+				supp[j - h] = 0;										// animation purposes only
+				swap(array, j, j - h);
+				animationQueue.push(array.slice()); // animation purposes only
+			}
+		}
+		h = (h - 1)/3;
+	}
+
+	animationQueue.push(supp.slice());	 		 // animation purposes only 
+	return array;
+}
+
 
 
 // ----------------
