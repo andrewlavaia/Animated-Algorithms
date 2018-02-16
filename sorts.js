@@ -307,6 +307,9 @@ function qsort(array, lo, hi) { // recursive
 }
 
 function partition(array, lo, hi) {
+	var supp = newFilledArray(array.length, 0); // animation purposes only
+	supp.push('s'); 														// animation purposes only
+
 	var p = array[lo]; // select first element to partition 
 										 // array must be randomly ordered or shuffled initially
 	var i = lo + 1; // skip partition element
@@ -314,20 +317,29 @@ function partition(array, lo, hi) {
 
 	while (i <= j) { 
 		while (array[i] <= p) { 
+			supp[i] = 0;															// animation purposes only
 			i++; // element already in correct array, ignore
+			supp[i] = array[i];												// animation purposes only
+			animationQueue.push(supp.slice()); 				// animation purposes only
 		}
 		while (array[j] > p) {
+			supp[j] = 0;															// animation purposes only
 			j--; // element already in correct sub-array, ignore
+			supp[j] = array[j];												// animation purposes only
+			animationQueue.push(supp.slice()); 				// animation purposes only
 		}
 		if (i < j) { // swap only if indices didn't cross
 			swap(array, i, j);
-			i++; 
-			j--;
-			animationQueue.push(array.slice()); // push a copy of the array into the queue
+			supp[i] = array[i];												// animation purposes only
+			supp[j] = array[j];												// animation purposes only
+			animationQueue.push(array.slice()); 			// animation purposes only
 		}
 	}
 
 	swap(array, lo, j); // place partitioned element into correct spot
-	animationQueue.push(array.slice()); // push a copy of the array into the queue
+	animationQueue.push(array.slice()); 			  	// animation purposes only
+	supp[i] = 0;																	// animation purposes only
+	supp[j] = 0;																	// animation purposes only
+	animationQueue.push(supp.slice()); 						// animation purposes only
 	return j;
 }
