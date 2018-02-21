@@ -20,10 +20,11 @@ function callUnion(arrSize, numUnions, pauseTime, unionAlgo) {
 	var array = [];
 	for (var i = 0; i < arrSize; i++) {
 	  array.push(i); 
-	  $('.union-layer').append('<div class="union-element" id="union-' + i +'">' + i + '</div>');
+	  $('.union-layer').append(
+	  	'<div class="union-set" id="union-set-' + i + '">' +
+	  	'<div class="union-element" id="union-' + i +'">' + i + '</div>' +
+	  	'</div>');
 	}
-
-	//console.log(array);
 
 	for (var i = 0; i < numUnions; i++) {
 		var p = Math.floor(Math.random() * arrSize);  // 0 through maxIntSize - 1
@@ -45,10 +46,29 @@ function drawUnions(pauseTime) {
 		if (unionAnimationQueue.length > 0) {
 			var q = unionAnimationQueue[0].pop();
 			var p = unionAnimationQueue[0].pop();
-			console.log('union(' + p + ', ' + q + ') - ' + unionAnimationQueue.shift());
-			$('#union-' + p).animate({ 
+			var array = unionAnimationQueue[0];
+			unionAnimationQueue.shift();
+
+			console.log('union(' + p + ', ' + q + ') - ' + array);
+			
+				// move each element that is connected to array[p] to where q is
+				for(var i = 0; i < array.length; i++) {
+					if(isConnectedQF(array, p, i)) {
+						moveAnimate('#union-' + i, '#union-set-' + q, pauseTime);
+					}
+				}
+				
+			
+/*
+			else {
+				// move both elements to a new set
+				moveAnimate('#union-' + q, '#union-layer2', pauseTime);
+				moveAnimate('#union-' + q, '#union-layer2', pauseTime);
+			}
+*/
+			/*$('#union-' + p).animate({ 
         top: "+=50px",
-      }, pauseTime);
+      }, pauseTime);*/
 			//$('#union-' + p).detach().appendTo('.union-layer2');
 			//$('#union-' + q).detach().appendTo('.union-layer2');
 		}

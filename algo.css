@@ -15,8 +15,15 @@ body {
 	margin: 10px;
 	padding: 10px;
 	border-bottom: 2px solid black;
-	height: 100%;
 	overflow: auto;
+}
+
+.union-set {
+	float: left;
+	position: relative;
+	margin: 10px;
+	padding: 10px;
+	border: 2px solid black;
 }
 
 .union-element {
