@@ -65,7 +65,7 @@ function callSort(arrSize, maxIntSize, pauseTime, sortAlgo) {
 	// Create an array and populate it with random values
 	var arr = [];
 	for (var i = 0; i < arrSize; i++) {
-	  arr.push(Math.round(Math.random() * maxIntSize)); // 0 through maxIntSize - 1
+	  arr.push(Math.round(Math.random() * maxIntSize)); // 0 through maxIntSize
 	}
 
 	// create labels for chart.js
@@ -139,6 +139,8 @@ function drawChart(pauseTime) {
 				chart.data.datasets[0].data = animationQueue.shift();
 			}
 			chart.update();
+		} else if (animationQueue == 0) {
+			clearInterval(intervalTimer);
 		}
 		
 	}, pauseTime);
@@ -191,7 +193,7 @@ function insertionSort(array) {
 	supp.push('s'); 												// animation purposes only
 
 	for (var i = 1; i < n; i++) {
-		for(var j = i; j > 0 && array[j] < array[j-1]; j--) {
+		for(var j = i; j > 0 && array[j] < array[j - 1]; j--) {
 			supp[j] = array[j]; 								 // animation purposes only
 			animationQueue.push(supp.slice());	 // animation purposes only 	
 			supp[j] = 0;												 // animation purposes only
@@ -220,10 +222,11 @@ function shellSort(array) {
 
 	// find highest reasonable h value
 	while (h < n) {
-		h = (h * 3) + 1;	// 1, 4, 13, 40, 121, 364 ....
+		h = (h * 3) + 1;	// 1, 4, 13, 40, 121, 364 .... 
 	}
 	while (h >= 1) {
 		for (var i = h; i < n; i++) {
+			// iterate through array and sort in intervals of h
 			for (var j = i; j >= h && array[j] < array[j - h]; j = j - h) {
 				supp[j] = array[j];									// animation purposes only
 				supp[j - h] = array[j-h];						// animation purposes only

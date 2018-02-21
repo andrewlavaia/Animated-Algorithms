@@ -44,12 +44,49 @@
 				</table>
 		        <canvas id="sort-chart" width="600" height="300"></canvas>
 		    </div>
+		    <div id="union-wrapper">
+		    	<h2> Unions </h2>
+		    	<table>
+					<tr>
+						<td>Size of Array:</td>
+						<td><input type="text" name="union-array-size" value="10"></td>
+					</tr>
+					<tr>
+						<td>Number of Random Union Calls:</td>
+						<td><input type="text" name="union-rand-calls" value="10"></td>
+					</tr>
+					<tr>
+						<td>Animation Time (in milliseconds): </td>
+						<td> <input type="text" name="union-animation-time" value="50"></td>
+					</tr>
+					<tr>
+						<td>Union Algorithm:</td>
+						<td> 
+							<select name="union-select">
+							  <option value="quickFind">Quick Find</option>
+							  <option value="quickUnion">Quick Union</option>
+							  <option value="wQuickUnion">Weighted Quick Union</option>
+							  <option value="wQuickUnionPC">Weighted Quick Union with Path Compression</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><input type="button" name="union-begin" value="Begin"></td>
+					</tr>
+				</table>
+				<div id="union-layers">
+					<div class="union-layer"> </div>
+					<div class="union-layer2"> </div>
+				</div>
+		    </div>
 	    </div>
 
  		<script src="./jquery-3.3.1.min.js"></script>
  		<script src="./chart.js"></script>
 	    <script src="./util.js"></script>
         <script src="./sorts.js"></script>
+        <script src="./unions.js"></script>
 
 	</body>
 </html>

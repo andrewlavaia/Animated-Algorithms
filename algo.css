@@ -6,3 +6,24 @@ body {
 
 
 }
+
+#union-layers {
+	overflow: auto;
+}
+
+.union-layer {
+	margin: 10px;
+	padding: 10px;
+	border-bottom: 2px solid black;
+	height: 100%;
+	overflow: auto;
+}
+
+.union-element {
+	float: left;
+	position: relative;
+	margin: 5px;
+	padding: 5px;
+	border: 1px solid black;
+	text-align: center;
+}
