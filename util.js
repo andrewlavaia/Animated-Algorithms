@@ -15,32 +15,36 @@ function newFilledArray(length, val) {
 // animates the moving of an element to a different parent/container div
 // to use: "moveAnimate('#ElementToMove', '#newContainer', 1000);
 function moveAnimate(element, newParent, animationTime){
-    //Allow passing in either a jQuery object or selector
+    // Allow passing in either a jQuery object or selector
     element = $(element);
     newParent = $(newParent);
 
-    element.css({
-    	'background-color': 'red',
-    });
-
+    // get current position
     var oldOffset = element.offset();
-    element.appendTo(newParent);
-    var newOffset = element.offset();
 
+    // clone element and place in final position (maintains width of parent)
+    var newElement = element.clone().appendTo(newParent); 
+
+    // get final position
+    var newOffset = newElement.offset();
+
+    // create another clone for animation purposes
     var temp = element.clone().appendTo('body');
     temp.css({
         'position': 'absolute',
-        'left': oldOffset.left,
-        'top': oldOffset.top,
+        'background-color': 'red',
+        'left': oldOffset.left - 5,
+        'top': oldOffset.top - 5,
         'z-index': 1000
     });
-    element.hide();
-    temp.animate({'top': newOffset.top, 'left': newOffset.left}, animationTime, function(){
-       	element.show();
-       	temp.remove();
-        element.css({
-	    	'background-color': 'white',
-	    });
+
+    // hide final position element until animation is complete
+    newElement.hide();
+
+    temp.animate({'top': newOffset.top - 5, 'left': newOffset.left - 5}, animationTime/2, function(){
+       	newElement.show(); 	// show element in final position
+       	element.remove(); 	// delete original element
+       	temp.remove(); 		// delete animation element
     });
 
 

@@ -11,7 +11,7 @@ $('input[name="union-begin"]').on('click', function() {
 
 function callUnion(arrSize, numUnions, pauseTime, unionAlgo) {
 	// empty existing DOM elements
-	$('#union-layers div').html('');
+	$('.union-layer').html('');
 
 	// clear previous timer if set
 	clearInterval(unionIntervalTimer);
@@ -37,10 +37,10 @@ function callUnion(arrSize, numUnions, pauseTime, unionAlgo) {
 	  array.pop();
 	}
 
-	unionIntervalTimer = drawUnions(pauseTime);
+	unionIntervalTimer = drawUnions(pauseTime, unionAlgo);
 }
 
-function drawUnions(pauseTime) {
+function drawUnions(pauseTime, sortAlgo) {
 	return setInterval(function() {
 
 		if (unionAnimationQueue.length > 0) {
@@ -51,26 +51,19 @@ function drawUnions(pauseTime) {
 
 			console.log('union(' + p + ', ' + q + ') - ' + array);
 			
+			if (sortAlgo == "quickFind") {
+
 				// move each element that is connected to array[p] to where q is
 				for(var i = 0; i < array.length; i++) {
 					if(isConnectedQF(array, p, i)) {
+						//var parentSet = $('#union-id-' + i).parent();
+						//var width = parentSet.width();
 						moveAnimate('#union-' + i, '#union-set-' + q, pauseTime);
+						//parentSet.width(width);	
 					}
 				}
-				
-			
-/*
-			else {
-				// move both elements to a new set
-				moveAnimate('#union-' + q, '#union-layer2', pauseTime);
-				moveAnimate('#union-' + q, '#union-layer2', pauseTime);
+				//$('#union-id-' + p).parent().hide();
 			}
-*/
-			/*$('#union-' + p).animate({ 
-        top: "+=50px",
-      }, pauseTime);*/
-			//$('#union-' + p).detach().appendTo('.union-layer2');
-			//$('#union-' + q).detach().appendTo('.union-layer2');
 		}
 
 		if (unionAnimationQueue.length == 0) {

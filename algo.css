@@ -24,13 +24,16 @@ body {
 	margin: 10px;
 	padding: 10px;
 	border: 2px solid black;
+	min-height: 40px;
+	min-width: 30px;
 }
-
+	
 .union-element {
 	float: left;
 	position: relative;
 	margin: 5px;
 	padding: 5px;
-	border: 1px solid black;
 	text-align: center;
+	width: 15px
+	height: 15px;
 }
