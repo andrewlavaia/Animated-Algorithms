@@ -42,9 +42,9 @@
 						<td><input type="button" name="sort-begin" value="Begin Sort"></td>
 					</tr>
 				</table>
-		        <canvas id="sort-chart" width="600" height="300"></canvas>
-		    </div>
-		    <div id="union-wrapper">
+		    <canvas id="sort-chart" width="600" height="300"></canvas>
+		  </div>
+		  <div id="union-wrapper">
 		    	<h2> Unions </h2>
 		    	<table>
 					<tr>
@@ -77,16 +77,104 @@
 				</table>
 				<div id="union-layers">
 					<h2 id="union-header">#0 : union( 0 , 0 )</h2>
-					<div class="union-layer"> </div>
-				</div>
+					<div class="union-layer"> 
+					</div>
+					<div class="unsorted"> </div>
+					<div class="tree">
+					 <ul class="top-level">
+					  <li>
+					    <span>Parent</span>
+					    <ul>
+					      <li>
+					        <span>Child</span>
+					        <ul>
+					          <li>
+					            <span>Grand Child</span>
+					          </li>
+					          <li>
+					            <span>Grand Child</span>
+					            <ul>
+					              <li>
+					                <span>Grand Child</span>
+					              </li>
+					              <li>
+					                <span>Grand Child</span>
+					              </li>
+					            </ul>
+					          </li>
+					        </ul>
+					      </li>
+					      <li>
+					        <span>Child</span>
+					        <ul>
+					          <li>
+					            <span>Grand Child</span>
+					            <ul>
+					              <li>
+					                <span>Grand Grand Child</span>
+					              </li>
+					            </ul>
+					          </li>
+					          <li>
+					            <span>Grand Child</span>
+					          </li>
+					        </ul>
+					      </li>
+					    </ul>
+					  </li>
+					</ul>
+					<ul class="top-level">
+					  <li>
+					    <span>Parent</span>
+					    <ul>
+					      <li>
+					        <span>Child</span>
+					        <ul>
+					          <li>
+					            <span>Grand Child</span>
+					          </li>
+					          <li>
+					            <span>Grand Child</span>
+					            <ul>
+					              <li>
+					                <span>Grand Child</span>
+					              </li>
+					              <li>
+					                <span>Grand Child</span>
+					              </li>
+					            </ul>
+					          </li>
+					        </ul>
+					      </li>
+					      <li>
+					        <span>Child</span>
+					        <ul>
+					          <li>
+					            <span>Grand Child</span>
+					            <ul>
+					              <li>
+					                <span>Grand Grand Child</span>
+					              </li>
+					            </ul>
+					          </li>
+					          <li>
+					            <span>Grand Child</span>
+					          </li>
+					        </ul>
+					      </li>
+					    </ul>
+					  </li>
+					 </ul>
+					</div>
 		    </div>
 	    </div>
+	  </div>
 
  		<script src="./jquery-3.3.1.min.js"></script>
  		<script src="./chart.js"></script>
-	    <script src="./util.js"></script>
-        <script src="./sorts.js"></script>
-        <script src="./unions.js"></script>
+	  <script src="./util.js"></script>
+    <script src="./sorts.js"></script>
+    <script src="./unions.js"></script>
 
 	</body>
 </html>
