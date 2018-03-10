@@ -356,7 +356,7 @@ function partition(array, lo, hi) {
 
 	var p = array[lo]; // select first element to partition 
 										 // array must be randomly ordered or shuffled initially
-	var i = lo + 1;    // skip partition element
+	var i = lo + 1; // skip partition element
 	var j = hi;
 
 	while (i <= j) { 

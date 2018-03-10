@@ -1,3 +1,4 @@
+// $('#union-wrapper').hide();
 var unionAnimationQueue = []; // very slow -> n^2 Memory requirement
 var unionIntervalTimer = 1000; 
 var callNum = 0;
@@ -15,8 +16,8 @@ function callUnion(arrSize, numUnions, pauseTime, unionAlgo) {
 	callNum = 0;
 	$('#union-header').html('#0 : union( 0 , 0 )');
 	$('.union-layer').html('');
-	$('.tree').html('');
-	$('.unsorted').html('');
+	$('.unsorted').html('<ul></ul>');
+	$('.tree').html('<ul class="top-level"></ul>'); // create first ul for initial animat
 	clearInterval(unionIntervalTimer);
 	unionAnimationQueue.length = 0;
 
@@ -30,7 +31,7 @@ function callUnion(arrSize, numUnions, pauseTime, unionAlgo) {
 	  	'<div class="union-element" id="union-' + i +'">' + i + '</div>' +
 	  	'</div>');
 	  } else {
-	  	$('.unsorted').append('<span id="node-' + i + '">' + i + '</span>');
+	  	$('.unsorted').append('<ul><li id="node-' + i + '"><span>' + i + '</span></li></ul>');
 	  }
 	}
 
@@ -76,7 +77,7 @@ function drawUnions(pauseTime, sortAlgo) {
 					// move each element that is connected to array[p] to where q is
 					for(var i = 0; i < array.length; i++) {
 						if(isConnectedQF(array, p, i)) {
-							moveAnimate('#union-' + i, '#union-set-' + array[q], pauseTime);
+							moveAnimateQF('#union-' + i, '#union-set-' + array[q], pauseTime);
 						}
 					} 
 				} else {
@@ -88,44 +89,24 @@ function drawUnions(pauseTime, sortAlgo) {
 			}
 			else if (sortAlgo == "quickUnion") {
 				if (p == q || isConnectedQU(array, p, q)) {
-					// do nothing
+					// do nothing except color nodes blue momentarily
+					colorNodes(p, q, 'blue');
+					setTimeout( function() {
+						colorNodes(p, q, 'white');
+					}, pauseTime/2);
 				}
-
-				// both are unsorted -> create new tree and move p into q
-				else if ($('.unsorted > #node-' + p).length > 0 &&
-					  		 $('.unsorted > #node-' + q).length > 0) 
-				{
-					$('#node-' + q).remove();
-					$('#node-' + p).remove();
-					$('.tree').append(
-						'<ul class="top-level"><li id="node-' + q + '"><span>' + q + '</span>' +
-						'<ul><li id="node-' + p  + '"><span>' + p +'</span></li></ul>' +
-						'</li></ul>');
-				} 
-
-
-				// only q is unsorted, create new Q tree and move p into q
-				else if ($('.unsorted > #node-' + q).length > 0) {
-					$('#node-' + q).remove();
+				else if ($('.unsorted > ul > #node-' + q).length > 0) {
+					// q is unsorted, create new tree
+					// To do: is a double simultaneous animation function possible? 	
+					$('#node-' + q).parent().remove();
 					$('.tree').append(
 						'<ul class="top-level"><li id="node-' + q + '"><span>' + q + '</span>' +
 						'</li></ul>');
-					movePinQ(array, p, q);
+					movePinQAnimate(array, p, q, pauseTime);
+				}	else {
+					movePinQAnimate(array, p, q, pauseTime);
 				}
 				
-				// only p is unsorted, create new P tree and move it into q
-				else if ($('.unsorted > #node-' + p).length > 0) {
-					$('#node-' + p).remove();
-					$('.tree').append(
-						'<ul><li id="node-' + p + '"><span>' + p + '</span></li></ul>');
-					movePinQ(array, p, q);
-				}
-				
-				// move root of P into Q
-				else {
-					//console.log($('#node-' + q).parent());	
-					movePinQ(array, p, q);
-				}	
 			}
 		}
 
@@ -135,8 +116,8 @@ function drawUnions(pauseTime, sortAlgo) {
 	}, pauseTime);
 }
 
+/*
 function movePinQ(array, p, q) {
-	//console.log(findRootQU(array, p));
 	var rootP = findRootQU(array, p);
 	var rootQ = findRootQU(array, q);
 	var pNode = $('#node-' + rootP).parent().html();
@@ -146,7 +127,59 @@ function movePinQ(array, p, q) {
 		$('#node-' + rootQ).append('<ul>' + pNode + '</ul>');
 	else
 		$('#node-' + rootQ).children('ul').append(pNode);
+}
+*/
+function movePinQAnimate(array, p, q, animationTime) {
+	var rootP = findRootQU(array, p);
+	var rootQ = findRootQU(array, q);
+	var pNode = $('#node-' + rootP).parent(); 
+	var qNode = $('#node-' + rootQ);
 
+	var pOffset = pNode.children().offset(); // current position
+
+  var temp = pNode.clone().appendTo('.tree'); // so that it has the tree class
+  temp.css({
+    'position': 'absolute',
+    'left': pOffset.left,
+    'top': pOffset.top,
+    'z-index': 1000
+  });
+
+  temp.find('span').css({
+    'background-color': 'red',
+  });
+
+  qNode.find('span').css({
+    'background-color': 'blue',
+  });
+
+  pNode.find('span').css({
+		'background-color': 'blue',
+	});
+
+	// determine final position
+	if (qNode.children().length == 1) {
+		qNode.append('<ul>' + pNode.html() + '</ul>');
+	} else {
+		qNode.children('ul').append(pNode.html());;
+	}
+ 
+
+	var newOffset = qNode.children('ul').offset();
+	newOffset.left = newOffset.left + qNode.children('ul').width() - pNode.children().width() - 15;
+	newOffset.top = newOffset.top + 10;
+
+	// hide final position until animation is complete
+  qNode.find('#node-' + rootP).hide();
+
+  temp.animate({'top': newOffset.top, 'left': newOffset.left}, animationTime/2, function(){
+   	qNode.find('#node-' + rootP).show(); // show element in final position
+   	pNode.remove(); 			  		// delete original element
+   	temp.remove(); 							// delete animation element
+   	qNode.find('span').css({
+    	'background-color': 'white',
+  	});
+  });
 
 }
 
@@ -175,9 +208,20 @@ function colorSets(p, q, color) {
 	});
 }
 
+function colorNodes(p, q, color) {
+	nodeP = $('#node-' + p + ' > span');
+	nodeQ = $('#node-' + q + ' > span');
+	nodeP.css({
+		'background-color': color,
+	});
+	nodeQ.css({
+		'background-color': color,
+	});
+}
+
 // animates the moving of an element to a different parent/container div
 // to use: "moveAnimate('#ElementToMove', '#newContainer', 1000);
-function moveAnimate(element, newParent, animationTime){
+function moveAnimateQF(element, newParent, animationTime){
   // Allow passing in either a jQuery object or selector
   element = $(element);
   oldParent = element.parent();
@@ -217,6 +261,50 @@ function moveAnimate(element, newParent, animationTime){
    		});
    	}
   });
+}
+
+
+function moveAnimateQU(element, newParent, animationTime){
+	// Allow passing in either a jQuery object or selector
+	element = $(element);
+	newParent = $(newParent);
+
+	// get current position
+	var oldOffset = element.offset();
+
+	// clone element and place in final position (maintains width of parent)
+	var newElement = element.clone().appendTo(newParent); 
+
+	// get final position
+	var newOffset = newElement.offset();
+
+	// create another clone for animation purposes
+	var temp = element.clone().appendTo('body');
+	temp.css({
+	  'position': 'absolute',
+	  'background-color': 'red',
+	  'left': oldOffset.left,
+	  'top': oldOffset.top,
+	  'z-index': 1000
+	});
+
+	// hide final position element until animation is complete
+	newElement.hide();
+
+	temp.animate({'top': newOffset.top, 'left': newOffset.left}, animationTime/3, function(){
+	 	newElement.show(); 			// show element in final position
+	 	element.remove(); 			// delete original element
+	 	temp.remove(); 					// delete animation element
+	 	/*
+	 	if(oldParent.children().length == 0) { 
+	 		elementSort(newParent);	// sort elements in new array only once
+	 		removeAllEmptySets();
+	 		newParent.css({					// reset background color
+	 			'background-color': 'white',
+	 		});
+	 	}*/
+	});
+
 }
 
 function elementSort(parent) {

@@ -60,3 +60,13 @@ function rMerge(array, lo, mid, hi) {
 		}
 	}
 }
+
+$('#sortNav').click(function() {
+	$('#sort-wrapper').show();
+	$('#union-wrapper').hide();
+});
+
+$('#unionNav').click(function() {
+	$('#union-wrapper').show();
+	$('#sort-wrapper').hide();
+});

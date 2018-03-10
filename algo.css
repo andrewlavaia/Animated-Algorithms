@@ -41,7 +41,7 @@ body {
 /* Union - Trees */
 
 .tree {
-
+ clear: both;
 }
 
 .tree ul {
@@ -143,8 +143,14 @@ body {
   border: 1px solid #e9453f;
 }
 
-.unsorted {
-
+.unsorted li {
+	float: left;
+	display: inline-block; 
+  vertical-align: top;
+  text-align: center;
+	list-style-type: none;
+	position: relative;
+	padding: 1em .5em 0 .5em;
 }
 
 .unsorted span {
