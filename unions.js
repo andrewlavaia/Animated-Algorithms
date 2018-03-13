@@ -1,5 +1,6 @@
 // $('#union-wrapper').hide();
 var unionAnimationQueue = []; // very slow -> n^2 Memory requirement
+var unionSuppQueue = [];
 var unionIntervalTimer = 1000; 
 var callNum = 0;
 
@@ -20,9 +21,11 @@ function callUnion(arrSize, numUnions, pauseTime, unionAlgo) {
 	$('.tree').html('<ul class="top-level"></ul>'); // create first ul for initial animat
 	clearInterval(unionIntervalTimer);
 	unionAnimationQueue.length = 0;
+	unionSuppQueue.length = 0;
 
 	// Create an array and populate values with indices
 	var array = [];
+	var sz =  newFilledArray(arrSize, 1); // needed for weighted quick unions
 	for (var i = 0; i < arrSize; i++) {
 	  array.push(i); 
 	  if(unionAlgo == "quickFind") {
@@ -43,11 +46,14 @@ function callUnion(arrSize, numUnions, pauseTime, unionAlgo) {
 	  unionAnimationQueue.push(array.slice());
 	  array.pop();
 	  array.pop();
+	  unionSuppQueue.push(sz.slice());
 	  if (unionAlgo == "quickFind") {
 	 		createUnionQF(array, p, q); 
 	 	} 
 	 	else if (unionAlgo == "quickUnion") {
 	 		createUnionQU(array, p, q); 
+	 	} else if (unionAlgo == "wQuickUnion") {	 		
+	 		createUnionWQU(array, sz, p, q);
 	 	}
 	}
 
@@ -65,8 +71,11 @@ function drawUnions(pauseTime, sortAlgo) {
 			var q = unionAnimationQueue[0].pop();
 			var p = unionAnimationQueue[0].pop();
 			var array = unionAnimationQueue[0].slice(); // copy
+			var sz = unionSuppQueue[0].slice(); // copy
 			console.log(p + ', ' + q + ' - ' + array + ' - ' + isConnectedQU(array, p, q));
+			console.log(sz);
 			unionAnimationQueue.shift();
+			unionSuppQueue.shift();
 			callNum++;
 			$('#union-header').html('#' + callNum + ' : union( ' + p + ' , ' + q + ' )');
 
@@ -87,26 +96,32 @@ function drawUnions(pauseTime, sortAlgo) {
 					}, pauseTime/2);
 				}
 			}
-			else if (sortAlgo == "quickUnion") {
+			else if (sortAlgo == "quickUnion" || sortAlgo == "wQuickUnion") {
+				var rootP = findRootQU(array, p);
+				var rootQ = findRootQU(array, q);
+
 				if (p == q || isConnectedQU(array, p, q)) {
 					// do nothing except color nodes blue momentarily
 					colorNodes(p, q, 'blue');
 					setTimeout( function() {
 						colorNodes(p, q, 'white');
 					}, pauseTime/2);
-				}
-				else if ($('.unsorted > ul > #node-' + q).length > 0) {
-					// q is unsorted, create new tree
-					// To do: is a double simultaneous animation function possible? 	
-					$('#node-' + q).parent().remove();
-					$('.tree').append(
-						'<ul class="top-level"><li id="node-' + q + '"><span>' + q + '</span>' +
-						'</li></ul>');
-					movePinQAnimate(array, p, q, pauseTime);
-				}	else {
-					movePinQAnimate(array, p, q, pauseTime);
-				}
-				
+				} 
+				else if (sz[rootP] <= sz[rootQ]) {
+					if ($('.unsorted > ul > #node-' + q).length > 0) {
+						// q is unsorted, create new tree
+						// To do: is a double simultaneous animation function possible? 	
+						$('#node-' + q).parent().remove();
+						$('.tree').append(
+							'<ul class="top-level"><li id="node-' + q + '"><span>' + q + '</span>' +
+							'</li></ul>');
+						movePinQAnimate(rootP, rootQ, pauseTime);
+					}	else {
+						movePinQAnimate(rootP, rootQ, pauseTime);
+					}
+				} else {
+					movePinQAnimate(rootQ, rootP, pauseTime);
+				}	
 			}
 		}
 
@@ -129,11 +144,9 @@ function movePinQ(array, p, q) {
 		$('#node-' + rootQ).children('ul').append(pNode);
 }
 */
-function movePinQAnimate(array, p, q, animationTime) {
-	var rootP = findRootQU(array, p);
-	var rootQ = findRootQU(array, q);
-	var pNode = $('#node-' + rootP).parent(); 
-	var qNode = $('#node-' + rootQ);
+function movePinQAnimate(p, q, animationTime) {
+	var pNode = $('#node-' + p).parent(); 
+	var qNode = $('#node-' + q);
 
 	var pOffset = pNode.children().offset(); // current position
 
@@ -149,10 +162,12 @@ function movePinQAnimate(array, p, q, animationTime) {
     'background-color': 'red',
   });
 
-  qNode.find('span').css({
+  // color root q node only 
+  qNode.children('span').css({
     'background-color': 'blue',
   });
 
+  // color all p nodes blue
   pNode.find('span').css({
 		'background-color': 'blue',
 	});
@@ -163,19 +178,18 @@ function movePinQAnimate(array, p, q, animationTime) {
 	} else {
 		qNode.children('ul').append(pNode.html());;
 	}
- 
 
 	var newOffset = qNode.children('ul').offset();
 	newOffset.left = newOffset.left + qNode.children('ul').width() - pNode.children().width() - 15;
 	newOffset.top = newOffset.top + 10;
 
 	// hide final position until animation is complete
-  qNode.find('#node-' + rootP).hide();
+  qNode.find('#node-' + p).hide();
 
   temp.animate({'top': newOffset.top, 'left': newOffset.left}, animationTime/2, function(){
-   	qNode.find('#node-' + rootP).show(); // show element in final position
-   	pNode.remove(); 			  		// delete original element
-   	temp.remove(); 							// delete animation element
+   	qNode.find('#node-' + p).show(); 	// show element in final position
+   	pNode.remove(); 			  					// delete original element
+   	temp.remove(); 										// delete animation element
    	qNode.find('span').css({
     	'background-color': 'white',
   	});
@@ -356,12 +370,30 @@ function findRootQU(array, i) {
 	return i;
 }
 
+function isConnectedQU(array, p, q) {
+	return findRootQU(array, p) == findRootQU(array, q);
+}
+
 function createUnionQU(array, p, q) {
 	var i = findRootQU(array, p);
 	var j = findRootQU(array, q);
 	array[i] = j;
 }
 
-function isConnectedQU(array, p, q) {
-	return findRootQU(array, p) == findRootQU(array, q);
+function createUnionWQU(array, sz, p, q) {
+	var i = findRootQU(array, p);
+	var j = findRootQU(array, q);
+	if (i == j) {
+		return;
+	}
+
+	// move tree with less nodes into tree with more nodes
+	if (sz[i] <= sz[j]) {
+		array[i] = j;
+		sz[j] += 	sz[i];
+	} else {
+		array[j] = i;
+		sz[i] += sz[j];
+	}
+
 }
