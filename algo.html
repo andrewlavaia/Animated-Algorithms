@@ -12,6 +12,7 @@
 		<div id="page-wrapper">
 			<button id='sortNav'>Sorts</button>
 			<button id='unionNav'>Unions</button>
+			<button id='percNav'>Percolation</button>
 			</ul>
 			<div id="sort-wrapper">
 				<h2> Array Sorting </h2>
@@ -83,94 +84,34 @@
 					</div>
 					<div class="unsorted"> </div>
 					<div class="tree">
-						<!--
-					 <ul class="top-level"> 
-					  <li>
-					    <span>Parent</span>
-					    <ul>
-					      <li>
-					        <span>Child</span>
-					        <ul>
-					          <li>
-					            <span>Grand Child</span>
-					          </li>
-					          <li>
-					            <span>Grand Child</span>
-					            <ul>
-					              <li>
-					                <span>Grand Child</span>
-					              </li>
-					              <li>
-					                <span>Grand Child</span>
-					              </li>
-					            </ul>
-					          </li>
-					        </ul>
-					      </li>
-					      <li>
-					        <span>Child</span>
-					        <ul>
-					          <li>
-					            <span>Grand Child</span>
-					            <ul>
-					              <li>
-					                <span>Grand Grand Child</span>
-					              </li>
-					            </ul>
-					          </li>
-					          <li>
-					            <span>Grand Child</span>
-					          </li>
-					        </ul>
-					      </li>
-					    </ul>
-					  </li>
-					</ul>
-					<ul class="top-level">
-					  <li>
-					    <span>Parent</span>
-					    <ul>
-					      <li>
-					        <span>Child</span>
-					        <ul>
-					          <li>
-					            <span>Grand Child</span>
-					          </li>
-					          <li>
-					            <span>Grand Child</span>
-					            <ul>
-					              <li>
-					                <span>Grand Child</span>
-					              </li>
-					              <li>
-					                <span>Grand Child</span>
-					              </li>
-					            </ul>
-					          </li>
-					        </ul>
-					      </li>
-					      <li>
-					        <span>Child</span>
-					        <ul>
-					          <li>
-					            <span>Grand Child</span>
-					            <ul>
-					              <li>
-					                <span>Grand Grand Child</span>
-					              </li>
-					            </ul>
-					          </li>
-					          <li>
-					            <span>Grand Child</span>
-					          </li>
-					        </ul>
-					      </li>
-					    </ul>
-					  </li>
-					 </ul>
-					-->
 					</div>
 		    </div>
+	    </div>
+	    <div id="perc-wrapper"> 
+	    	<h2> Percolation </h2>
+	    	<table>
+					<tr>
+						<td>Number of Rows:</td>
+						<td><input type="text" name="perc-rows" value="10"></td>
+					</tr>
+					<tr>
+						<td>Number of Columns:</td>
+						<td><input type="text" name="perc-cols" value="10"></td>
+					</tr>
+					<tr>
+						<td>Animation Time (in milliseconds): </td>
+						<td> <input type="text" name="perc-animation-time" value="2000"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><input type="button" name="perc-begin" value="Begin"></td>
+					</tr>
+				</table>
+				<div id="perc-layer">
+					<table id="perc-table">
+
+					</table>
+				</div>
 	    </div>
 	  </div>
 
@@ -179,6 +120,7 @@
 	  <script src="./util.js"></script>
     <script src="./sorts.js"></script>
     <script src="./unions.js"></script>
+    <script src="./percolation.js"></script>
 
 	</body>
 </html>

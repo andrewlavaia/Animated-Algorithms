@@ -164,4 +164,11 @@ body {
   top: 0px;
 }
 
+#perc-table td {
+	margin: 1px;
+	width: 10px;
+	height: 10px;
+	border: 1px solid black;
+}
+
 
