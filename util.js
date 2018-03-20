@@ -64,9 +64,17 @@ function rMerge(array, lo, mid, hi) {
 $('#sortNav').click(function() {
 	$('#sort-wrapper').show();
 	$('#union-wrapper').hide();
+	$('#perc-wrapper').hide();
 });
 
 $('#unionNav').click(function() {
-	$('#union-wrapper').show();
 	$('#sort-wrapper').hide();
+	$('#union-wrapper').show();
+	$('#perc-wrapper').hide();
+});
+
+$('#percNav').click(function() {
+	$('#sort-wrapper').hide();
+	$('#union-wrapper').hide();
+	$('#perc-wrapper').show();
 });

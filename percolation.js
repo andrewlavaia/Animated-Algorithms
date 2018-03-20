@@ -9,6 +9,11 @@ var cols;
 var percIntervalTimer = 1000; 
 var percNum = 0;
 
+var visited = []; // matrix for DFS
+var stack = []; // stack for DFS
+var paths = []; // stores the stacks
+
+
 $('input[name="perc-begin"]').on('click', function() {
   rows = parseInt($('input[name="perc-rows"]').val(), 10);
   cols = parseInt($('input[name="perc-cols"]').val(), 10);
@@ -24,8 +29,17 @@ function callPerc(rows, cols, pauseTime) {
   matrix.length = 0;
   unions.length = 0;
   nodeCount.length = 0;
+  visited.length = 0;
+  stack.length = 0;
+  paths.length = 0;
   percNum = 0;
   table.html('');
+
+  // populate visited matrix for DFS
+  colArray = newFilledArray(cols, 0);
+  for (var i = 0; i < rows; i++) {
+    visited.push(colArray.slice());
+  }
 
   // create matrix and populate DOM
   for (var i = 0; i < rows; i++) {
@@ -51,6 +65,12 @@ function callPerc(rows, cols, pauseTime) {
     matrix.push(rowArray.slice());
   }
 
+  // open top and bottom rows
+  for (var z = 0; z < cols; z++) {
+    open(0, z);
+    open(rows - 1, z);
+  }
+
   percIntervalTimer = drawPerc(pauseTime);
 }
 
@@ -66,20 +86,7 @@ function drawPerc(pauseTime) {
     } 
     else {
       clearInterval(percIntervalTimer);
-
-      // !!! Should I use shortest path instead?
-      
-      // change color to all percolated nodes to green
-      for(var i = 0; i < rows; i++) {
-        for (var j = 0; j < cols; j++) {
-          // change unions for top and bottom rows if not open
-
-          //if (isOpen(i, j) && isConnected(0, (i * cols) + j)) {
-          if (isConnected(0, (i * cols) + j)) {
-            $('#perc-' + i + '-' + j).css("background-color", "green");
-          }
-        }
-      }
+      colorShortestPath();
     }
     
   }, pauseTime);
@@ -160,6 +167,107 @@ function isConnected(p, q) {
 function percolates() {
   // check if first node is connected to last node
   return isConnected(0, (rows * cols) - 1);
+}
+
+function hasVisited(row, col) {
+  return visited[row][col];
+}
+
+function colorShortestPath() {
+  for (var j = 0; j < cols; j++) {
+    if (isOpen(1, j) && !hasVisited (1, j)) {  
+      DFS(1, j);
+    }
+  }
+
+  for (var n = 0; n < paths[0].length; n++) {
+    $('#perc-' + paths[0][n][0] + '-' + paths[0][n][1]).css("background-color", "green");
+  }
+
+}
+
+function DFS(row, col) {
+  
+  // if first visit to node, change status and push to stack
+  if(!hasVisited(row, col)) {
+    visited[row][col] = 1;
+    stack.push([row, col]); 
+  }
+
+  // console.log(row + ', ' + col + ' - ' + stack);
+  console.log(row + ', ' + col);
+
+  // if second to last row is open and connected then we are done
+  if (row == rows - 2 
+    && isOpen(row, col)
+    && isConnected(0, (row * cols) + col)) 
+  {
+    // keep only shortest path
+    if (paths.length > 0 && stack.length < paths[0].length) {
+      paths.pop();
+      paths.push(stack.slice());
+      stack.pop();
+      //visited[row][col] = 0;
+      return;
+    } 
+    else if (paths.length == 0) {
+      paths.push(stack.slice());
+      stack.pop();
+      //visited[row][col] = 0;
+      return;    
+    }
+    else {
+      stack.pop();
+      //visited[row][col] = 0;
+      return;
+    }
+  }
+
+  // if node is open and connected, push node to stack and call DFS 
+
+  // check below
+  if (row + 1 < rows
+    && !hasVisited(row + 1, col)
+    && isOpen(row + 1, col) 
+    && isConnected(0, ((row + 1) * cols) + col)) 
+  { 
+    DFS(row + 1, col);
+  }
+
+  // check left
+  if (col > 0 
+    && !hasVisited(row, col - 1)
+    && isOpen(row, col - 1) 
+    && isConnected(0, ((row) * cols) + col - 1)) 
+  { 
+    DFS(row, col - 1);
+  }
+
+  // check right
+  if (col + 1 < cols
+    && row > 1  
+    && !hasVisited(row, col + 1)
+    && isOpen(row, col + 1) 
+    && isConnected(0, ((row) * cols) + col + 1)) 
+  { 
+    DFS(row, col + 1);
+  }
+
+  // check above (only if at least third row)
+  if (row > 2
+    && !hasVisited(row - 1, col)
+    && isOpen(row - 1, col) 
+    && isConnected(0, ((row - 1) * cols) + col))
+  { 
+    DFS(row - 1, col);
+  }
+
+  // check if consecutive nodes are on stack -> shorter path exists
+
+  // no eligible nodes found, pop stack and return
+  stack.pop();
+  //visited[row][col] = 0;
+  return;
 }
 
 
