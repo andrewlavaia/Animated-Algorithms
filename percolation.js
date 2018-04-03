@@ -1,5 +1,5 @@
 // Initially hide #union div
-// $('#perc-wrapper').hide();
+$('#perc-wrapper').hide();
 
 var matrix = [];
 var unions = [];
@@ -192,6 +192,27 @@ function DFS(row, col) {
   if(!hasVisited(row, col)) {
     visited[row][col] = 1;
     stack.push([row, col]); 
+  
+    /*
+    // check if consecutive nodes are on stack -> shorter path exists
+    if (stack.length > 4
+      && col > 0
+      && row < rows - 1 
+      && hasVisited(row, col - 1) 
+      && stack[stack.length - 4][0] == row  // node to left
+      && stack[stack.length - 4][1] == col - 1
+      && stack[stack.length - 2][0] == row + 1 // previous node is below
+      && stack[stack.length - 2][1] == col) {
+      console.log("shorter path exists");
+      (stack[stack.length - 1][0] != row 
+          && stack[stack.length - 1][1] != col - 1) {
+        console.log(stack[stack.length - 1]);
+        stack.pop();
+      }
+      
+      stack.push([row, col]);
+    }
+    */
   }
 
   // console.log(row + ', ' + col + ' - ' + stack);
@@ -261,8 +282,6 @@ function DFS(row, col) {
   { 
     DFS(row - 1, col);
   }
-
-  // check if consecutive nodes are on stack -> shorter path exists
 
   // no eligible nodes found, pop stack and return
   stack.pop();
