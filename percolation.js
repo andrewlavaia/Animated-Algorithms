@@ -13,6 +13,9 @@ var visited = []; // matrix for DFS
 var stack = []; // stack for DFS
 var paths = []; // stores the stacks
 
+secondToLastRow = 0;
+secondToLastCol = 0;
+
 
 $('input[name="perc-begin"]').on('click', function() {
   rows = parseInt($('input[name="perc-rows"]').val(), 10);
@@ -187,36 +190,21 @@ function colorShortestPath() {
 }
 
 function DFS(row, col) {
-  
+
   // if first visit to node, change status and push to stack
   if(!hasVisited(row, col)) {
     visited[row][col] = 1;
     stack.push([row, col]); 
-  
-    /*
-    // check if consecutive nodes are on stack -> shorter path exists
-    if (stack.length > 4
-      && col > 0
-      && row < rows - 1 
-      && hasVisited(row, col - 1) 
-      && stack[stack.length - 4][0] == row  // node to left
-      && stack[stack.length - 4][1] == col - 1
-      && stack[stack.length - 2][0] == row + 1 // previous node is below
-      && stack[stack.length - 2][1] == col) {
-      console.log("shorter path exists");
-      (stack[stack.length - 1][0] != row 
-          && stack[stack.length - 1][1] != col - 1) {
-        console.log(stack[stack.length - 1]);
-        stack.pop();
-      }
-      
-      stack.push([row, col]);
-    }
-    */
+  }
+
+  if (stack.length > 3) {
+    secondToLastRow = stack[stack.length - 3][0];
+    secondToLastCol = stack[stack.length - 3][1];
+    // console.log( secondToLastRow + ', ' + secondToLastCol)
   }
 
   // console.log(row + ', ' + col + ' - ' + stack);
-  console.log(row + ', ' + col);
+  // console.log(row + ', ' + col);
 
   // if second to last row is open and connected then we are done
   if (row == rows - 2 
@@ -228,18 +216,15 @@ function DFS(row, col) {
       paths.pop();
       paths.push(stack.slice());
       stack.pop();
-      //visited[row][col] = 0;
       return;
     } 
     else if (paths.length == 0) {
       paths.push(stack.slice());
       stack.pop();
-      //visited[row][col] = 0;
       return;    
     }
     else {
       stack.pop();
-      //visited[row][col] = 0;
       return;
     }
   }
@@ -274,11 +259,15 @@ function DFS(row, col) {
     DFS(row, col + 1);
   }
 
-  // check above (only if at least third row)
+  // check above 
+  // only makes sense to check if at least third row
+  // only go up if current node is not a diagonal jump away
   if (row > 2
     && !hasVisited(row - 1, col)
     && isOpen(row - 1, col) 
-    && isConnected(0, ((row - 1) * cols) + col))
+    && isConnected(0, ((row - 1) * cols) + col)
+    && (secondToLastRow != row - 1 
+      || (secondToLastCol != col - 1 && secondToLastCol != col + 1)))
   { 
     DFS(row - 1, col);
   }
