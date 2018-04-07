@@ -101,6 +101,8 @@ function callSort(arrSize, maxIntSize, pauseTime, sortAlgo) {
     mergeSort(arr);
   else if (sortAlgo == "quickSort")
     quickSort(arr); 
+  else if (sortAlgo == "heapSort")
+    heapSort(arr);
   
   intervalTimer = drawChart(pauseTime);
 }
@@ -250,8 +252,9 @@ function shellSort(array) {
 // ----------------
 // Split array into a left and right array and recursively sort and merge
 // the smaller sub-arrays
-// Speed: nlgn always
+// Speed: n*lg(n) always
 // Memory: extra memory required from temporary array that gets copied
+// Stable (one of the best stable sorts out there)
 
 function mergeSort(array) {
   aux = new Array(array.length);
@@ -327,13 +330,14 @@ function merge(array, lo, mid, hi) {
 // This procedure is then called recursively on the smaller sub-arrays.
 // Speed: nlgn average, n^2 worst case if already sorted
 // Memory: no extra memory, sorts in place
+// Not stable
 
 // Normally would need to shuffle array before hand so that it would eliminate 
 // dependence on input by randomizing the array.
 // This allows the partition element to be first element,
 // rather than having to randomly select parition elements.
 // Shuffles can be performed in O(n) time.
-// Not need in this case since array is already randomized.
+// Not needed in this case since array is already randomized.
 function quickSort(array) {
   // shuffle(array);
   qsort(array, 0, array.length - 1);
@@ -385,4 +389,19 @@ function partition(array, lo, hi) {
   supp[j] = 0;                                  // animation purposes only
   animationQueue.push(supp.slice());            // animation purposes only
   return j;
+}
+
+// ----------------
+// Heap Sort
+// ----------------
+// First organizes the array into a complete heap and then
+// sorts the heap. Could be slower than quickSort in practice
+// due to memory caching. Not stable. 
+// Speed: nlogn worst case
+// Memory: no extra memory required, in place
+function heapSort(array) {
+  var supp = newFilledArray(n, 0);        // animation purposes only
+  supp.push('s');                         // animation purposes only
+
+
 }
