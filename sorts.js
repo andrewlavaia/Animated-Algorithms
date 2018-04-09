@@ -398,10 +398,75 @@ function partition(array, lo, hi) {
 // sorts the heap. Could be slower than quickSort in practice
 // due to memory caching. Not stable. 
 // Speed: nlogn worst case
-// Memory: no extra memory required, in place
+// Memory: typically no extra memory required, sorts in place
 function heapSort(array) {
+  n = array.length;
   var supp = newFilledArray(n, 0);        // animation purposes only
   supp.push('s');                         // animation purposes only
 
+  var heap = [];
+  heap.push(0); // populate first value so index starts at 1
+  for (var i = 0; i < array.length; i++) {
+    heapInsert(heap, array[i]);
+  }
 
+  array = heap.slice();                 
+  array.shift();                           
+  animationQueue.push(array);              // animation purposes only
+  
+  var n = array.length;
+  for (var i = n - 1; i >= 0; i--){
+    var max = heapDelMax(heap);
+    array[i] = max;
+    animationQueue.push(array.slice());
+  }
+
+}
+
+function heapInsert(heap, val) {
+  heap.push(val); // added to back of heap
+  heapSwim(heap, heap.length - 1); // swim upwards
+}
+
+function heapSwim(heap, k) {
+  while (k > 1 && heap[Math.floor(k/2)] < heap[k]) {
+    heapSwap(heap, k, Math.floor(k/2));
+    k = Math.floor(k/2);
+
+    //animationQueue.push(supp.slice());        // animation purposes only
+  }
+}
+
+function heapSwap(heap, j, k) {
+    var temp = heap[k];
+    heap[k] = heap[j];
+    heap[j] = temp;
+}
+
+function heapSink(heap, k) {
+  var n = heap.length - 1;
+  while (k*2 <= n) {
+    // choose largest child
+    var j = k*2;
+    if (j < n && heap[j] < heap[j + 1]) {
+      j++; 
+    }
+    
+    // check values
+    if (heap[k] >= heap[j]) {
+      return;
+    }
+    
+    // swap values  
+    heapSwap(heap, j, k);
+    k = j;
+  }
+}
+
+function heapDelMax(heap) {
+  var key = heap[1];
+  heapSwap(heap, 1, heap.length - 1);
+  heap.pop();
+  heapSink(heap, 1);
+  return key;
 }
