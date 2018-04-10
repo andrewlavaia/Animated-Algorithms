@@ -341,6 +341,7 @@ function merge(array, lo, mid, hi) {
 function quickSort(array) {
   // shuffle(array);
   qsort(array, 0, array.length - 1);
+  animationQueue.push(array.slice());
   return array;
 }
 
@@ -398,33 +399,43 @@ function partition(array, lo, hi) {
 // sorts the heap. Could be slower than quickSort in practice
 // due to memory caching. Not stable. 
 // Speed: nlogn worst case
-// Memory: typically no extra memory required, sorts in place
+// Memory: typically no extra memory required as it sorts in place
+// (not really in this case because I am creating a new heap)
 function heapSort(array) {
   n = array.length;
-  var supp = newFilledArray(n, 0);        // animation purposes only
-  supp.push('s');                         // animation purposes only
 
   var heap = [];
   heap.push(0); // populate first value so index starts at 1
-  for (var i = 0; i < array.length; i++) {
-    heapInsert(heap, array[i]);
+  for (var i = 0; i < n; i++) {
+    heapInsert(heap, array[i], array, i); // parameters 3 + 4 for animation only
   }
 
-  array = heap.slice();                 
-  array.shift();                           
-  animationQueue.push(array);              // animation purposes only
-  
-  var n = array.length;
   for (var i = n - 1; i >= 0; i--){
-    var max = heapDelMax(heap);
+    var max = heapDelMax(heap, array, i); // parameters 2 + 3 for animation only
     array[i] = max;
-    animationQueue.push(array.slice());
   }
+
+  // clean up final animations
+  var supp = newFilledArray(n, 0);          // animation purposes only
+  supp.push('s');                           // animation purposes only
+  animationQueue.push(supp.slice());        // animation purposes only
+  animationQueue.push(array.slice());       // animation purposes only
 
 }
 
-function heapInsert(heap, val) {
-  heap.push(val); // added to back of heap
+function heapInsert(heap, val, array, i) {
+  heap.push(val); // added to back of heap  
+  
+  var supp = heap.slice();                    // animation purposes only
+  supp.shift();                               // animation purposes only
+  while(supp.length < array.length) {         // animation purposes only
+    supp.push(0);                             // animation purposes only
+  }                                           // animation purposes only
+  supp.push('s');                             // animation purposes only       
+  animationQueue.push(supp.slice());          // animation purposes only
+  array[i] = 0;                               // animation purposes only
+  animationQueue.push(array.slice());         // animation purposes only
+
   heapSwim(heap, heap.length - 1); // swim upwards
 }
 
@@ -432,15 +443,21 @@ function heapSwim(heap, k) {
   while (k > 1 && heap[Math.floor(k/2)] < heap[k]) {
     heapSwap(heap, k, Math.floor(k/2));
     k = Math.floor(k/2);
-
-    //animationQueue.push(supp.slice());        // animation purposes only
   }
 }
 
 function heapSwap(heap, j, k) {
-    var temp = heap[k];
-    heap[k] = heap[j];
-    heap[j] = temp;
+  var temp = heap[k];
+  heap[k] = heap[j];
+  heap[j] = temp;
+
+  var supp = heap.slice();                    // animation purposes only
+  supp.shift();                               // animation purposes only
+  if(supp.length == 1) {                      // animation purposes only
+    supp.push(0);                             // animation purposes only
+  }                                           // animation purposes only
+  supp.push('s');                             // animation purposes only
+  animationQueue.push(supp.slice());          // animation purposes only
 }
 
 function heapSink(heap, k) {
@@ -463,10 +480,14 @@ function heapSink(heap, k) {
   }
 }
 
-function heapDelMax(heap) {
+function heapDelMax(heap, array, i) {
   var key = heap[1];
   heapSwap(heap, 1, heap.length - 1);
   heap.pop();
+
+  array[i] = key;                             // animation purposes only
+  animationQueue.push(array.slice());         // animation purposes only
+  
   heapSink(heap, 1);
   return key;
 }
