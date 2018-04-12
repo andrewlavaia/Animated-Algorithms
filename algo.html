@@ -13,6 +13,7 @@
 			<button id='sortNav'>Sorts</button>
 			<button id='unionNav'>Unions</button>
 			<button id='percNav'>Percolation</button>
+			<button id='treeNav'>Trees</button>
 			<div id="sort-wrapper">
 				<h2>Array Sorting</h2>
 				<table>
@@ -113,6 +114,36 @@
 					</table>
 				</div>
 	    </div>
+	    <div id="tree-wrapper"> 
+	    	<h2> Trees </h2>
+	    	<table>
+					<tr>
+						<td>Number of Nodes:</td>
+						<td><input type="text" name="tree-nodes" value="10"></td>
+					</tr>
+					<tr>
+						<td>Animation Time (in milliseconds): </td>
+						<td> <input type="text" name="tree-animation-time" value="20"></td>
+					</tr>
+					<tr>
+						<td>Tree Structure:</td>
+						<td>
+							<select name="tree-select">
+							  <option value="tree-heap">Heap</option>
+							  <option value="tree-bst" selected="selected">Binary Search Tree</option>
+							  <option value="tree-redblackbst">Red-Black Binary Search Tree</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td><input type="button" name="tree-begin" value="Construct Tree"></td>
+					</tr>
+				</table>
+				<div id="tree-layer">
+
+				</div>
+	    </div>
 	  </div>
 
  		<script src="./jquery-3.3.1.min.js"></script>
@@ -121,6 +152,7 @@
     <script src="./sorts.js"></script>
     <script src="./unions.js"></script>
     <script src="./percolation.js"></script>
+    <script src="./trees.js"></script>
 
 	</body>
 </html>

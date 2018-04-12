@@ -65,16 +65,26 @@ $('#sortNav').click(function() {
 	$('#sort-wrapper').show();
 	$('#union-wrapper').hide();
 	$('#perc-wrapper').hide();
+	$('#tree-wrapper').hide();
 });
 
 $('#unionNav').click(function() {
 	$('#sort-wrapper').hide();
 	$('#union-wrapper').show();
 	$('#perc-wrapper').hide();
+	$('#tree-wrapper').hide();
 });
 
 $('#percNav').click(function() {
 	$('#sort-wrapper').hide();
 	$('#union-wrapper').hide();
 	$('#perc-wrapper').show();
+	$('#tree-wrapper').hide();
+});
+
+$('#treeNav').click(function() {
+	$('#sort-wrapper').hide();
+	$('#union-wrapper').hide();
+	$('#perc-wrapper').hide();
+	$('#tree-wrapper').show();
 });
