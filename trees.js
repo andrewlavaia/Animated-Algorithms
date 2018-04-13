@@ -27,9 +27,7 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
   var array = [];
   for (var i = 0; i < numNodes; i++) {
     var p = Math.floor(Math.random() * 10);  // 0 through 100 - 1
-    array.push(p);
-    treeAnimationQueue.push(array.slice()); // add copy of array with p in front
-    array.pop();
+
     if (treeAlgo == "tree-heap") {
       insertNodeHeap(array, p); 
     } 
@@ -39,6 +37,10 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
     else if (treeAlgo == "tree-redblackbst") {      
       insertNodeRBBST(array, p);
     }
+
+    array.push(p);
+    treeAnimationQueue.push(array.slice()); // add copy of array with p in front
+    array.pop();
   }
 
   treeIntervalTimer = drawTrees(pauseTime, treeAlgo);
@@ -77,16 +79,13 @@ function drawTrees(pauseTime, treeAlgo) {
 
 function insertNodeHeap(array, p) {
   array.push(p);
-  treeAnimationQueue.push(array.slice());
 }
 
 function insertNodeBST(array, p) {
   array.push(p);
-  treeAnimationQueue.push(array.slice());
 }
 
 function insertNodeRBBST(array, p) {
   array.push(p);
-  treeAnimationQueue.push(array.slice());
 }
 
