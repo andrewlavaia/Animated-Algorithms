@@ -123,14 +123,14 @@
 					</tr>
 					<tr>
 						<td>Animation Time (in milliseconds): </td>
-						<td> <input type="text" name="tree-animation-time" value="20"></td>
+						<td> <input type="text" name="tree-animation-time" value="200"></td>
 					</tr>
 					<tr>
 						<td>Tree Structure:</td>
 						<td>
 							<select name="tree-select">
-							  <option value="tree-heap">Heap</option>
-							  <option value="tree-bst" selected="selected">Binary Search Tree</option>
+							  <option value="tree-heap" selected="selected">Heap</option>
+							  <option value="tree-bst">Binary Search Tree</option>
 							  <option value="tree-redblackbst">Red-Black Binary Search Tree</option>
 							</select>
 						</td>
@@ -140,11 +140,11 @@
 						<td><input type="button" name="tree-begin" value="Construct Tree"></td>
 					</tr>
 				</table>
-				<div id="tree-layer">
+				<div id="tree-layers">
 					<h2 id="tree-header">#0 : insert( 0 )</h2>
 					<div class="tree-layer"> 
 					</div>
-					<div class="tree-display">
+					<div class="tree">
 					</div>
 				</div>
 	    </div>

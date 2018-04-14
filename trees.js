@@ -19,7 +19,7 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
   treeCallNum = 0;
   $('#tree-header').html('#0 : insert( 0 )');
   $('.tree-layer').html('');
-  $('.tree-display').html('<ul class="top-level"></ul>'); // create first ul for root
+  $('.tree').html('<ul class="top-level"></ul>'); // create first ul for root
   clearInterval(treeIntervalTimer);
   treeAnimationQueue.length = 0;
 
@@ -27,7 +27,7 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
   var array = [];
   array.push(0); // add first item so that index starts at 1
   for (var i = 0; i < numNodes; i++) {
-    var p = Math.floor(Math.random() * 10);  // 0 through 100 - 1
+    var p = Math.floor(Math.random() * 1000);  // 0 through 1000 - 1
 
     if (treeAlgo == "tree-heap") {
       insertNodeHeap(array, p); 
@@ -49,7 +49,6 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
 
 function drawTrees(pauseTime, treeAlgo) {
   return setInterval(function() {
-    console.log(treeAnimationQueue.slice());
     if (treeAnimationQueue.length > 0) {
       var p = treeAnimationQueue[0].pop(); // grab p
       var array = treeAnimationQueue[0].slice(); // copy array
@@ -59,7 +58,7 @@ function drawTrees(pauseTime, treeAlgo) {
       $('#tree-header').html('#' + treeCallNum + ' : insert( ' + p + ' )');
 
       if (treeAlgo == "tree-heap") {
-        $('.tree-display').html(array);
+        heapDrawTree(array, p, pauseTime);
       }
       else if (treeAlgo == "tree-bst") {
         $('.tree-display').html(array);
@@ -82,7 +81,6 @@ function drawTrees(pauseTime, treeAlgo) {
 function insertNodeHeap(array, p) {
   array.push(p);
   heapSwim(array, array.length - 1); // swim last element
-  console.log(array);
 }
 
 function insertNodeBST(array, p) {
@@ -133,3 +131,78 @@ function heapSwap(array, p, q) {
   array[q] = temp;
 }
 
+function heapDrawTree(array, p, pauseTime) {
+  
+  $('#tree-layers .tree').html('');
+  $('#tree-layers .tree').append(
+    '<ul class="top-level"><li id="tree-node-' + array[0] + '">' +
+    '<span>' + array[0] + '</span>' +
+    '</li></ul>');
+  
+  var parent = 0;
+  for (var k = 1; k < array.length - 1; k++) {
+    if (k % 2 == 1) {
+      $('#tree-node-' + array[parent]).append(
+        '<ul><li id="tree-node-' + array[k] + '">' +
+        '<span>' + array[k] + '</span>' +
+        '</li></ul>');
+    } 
+    else {
+      $('#tree-node-' + array[k - 1]).parent().append(
+        '<li id="tree-node-' + array[k] + '">' +
+        '<span>' + array[k] + '</span>' +
+        '</li>');
+      parent = parent + 1;
+    }
+  }
+}
+
+function heapAnimateP(array, p, animationTime) {
+  var pNode = $('#tree-node-' + p).parent(); 
+  var qNode = $('#tree-node-' + array[0]);
+
+  var pOffset = pNode.children().offset(); // current position of pNode
+
+  // clone pNode and color red to show animation
+  var temp = pNode.clone().appendTo('.tree'); // so that it has the tree class
+  temp.css({
+    'position': 'absolute',
+    'left': pOffset.left,
+    'top': pOffset.top,
+    'z-index': 1000
+  });
+  temp.find('span').css({
+    'background-color': 'red',
+  });
+
+  // color both nodes blue 
+  qNode.children('span').css({
+    'background-color': 'blue',
+  });
+  pNode.find('span').css({
+    'background-color': 'blue',
+  });
+
+  // determine final position
+  if (qNode.children().length == 1) {
+    qNode.append('<ul>' + pNode.html() + '</ul>');
+  } else {
+    qNode.children('ul').append(pNode.html());
+  }
+  var newOffset = qNode.children('ul').offset();
+  newOffset.left = newOffset.left + qNode.children('ul').width() - pNode.children().width() - 15;
+  newOffset.top = newOffset.top + 10;
+
+  // hide final position until animation is complete
+  qNode.find('#node-' + p).hide();
+
+  // animate temp clone moving from original to final position
+  temp.animate({'top': newOffset.top, 'left': newOffset.left}, animationTime/2, function(){
+    qNode.find('#node-' + p).show();  // show element in final position
+    pNode.remove();                   // delete original element
+    temp.remove();                    // delete animation element
+    qNode.find('span').css({
+      'background-color': 'white',
+    });
+  });
+}
