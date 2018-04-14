@@ -25,6 +25,7 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
 
   // Create an empty array
   var array = [];
+  array.push(0); // add first item so that index starts at 1
   for (var i = 0; i < numNodes; i++) {
     var p = Math.floor(Math.random() * 10);  // 0 through 100 - 1
 
@@ -52,6 +53,7 @@ function drawTrees(pauseTime, treeAlgo) {
     if (treeAnimationQueue.length > 0) {
       var p = treeAnimationQueue[0].pop(); // grab p
       var array = treeAnimationQueue[0].slice(); // copy array
+      array.shift(); // get rid of original 0 
 
       treeCallNum++;
       $('#tree-header').html('#' + treeCallNum + ' : insert( ' + p + ' )');
@@ -70,7 +72,7 @@ function drawTrees(pauseTime, treeAlgo) {
       treeAnimationQueue.shift();  
     }
 
-    if (treeAnimationQueue.length == 0) {
+    if (treeAnimationQueue.length == 0) { 
       clearInterval(treeIntervalTimer);
     }
   }, pauseTime);
@@ -79,6 +81,8 @@ function drawTrees(pauseTime, treeAlgo) {
 
 function insertNodeHeap(array, p) {
   array.push(p);
+  heapSwim(array, array.length - 1); // swim last element
+  console.log(array);
 }
 
 function insertNodeBST(array, p) {
@@ -87,5 +91,45 @@ function insertNodeBST(array, p) {
 
 function insertNodeRBBST(array, p) {
   array.push(p);
+}
+
+// -------------------
+// Heap functions
+// ------------------- 
+function heapSwim(array, k) {
+  if (k == 1) { // top node
+    return;
+  }
+
+  var parent = parseInt(k/2, 10); // 2.5 converted to 2
+  if(array[parent] < array[k]) {
+    heapSwap(array, k, parent);
+    heapSwim(array, parent);
+  }
+}
+
+function heapSink(array, k) {
+  var child = k * 2
+  var sz = array.length - 1;
+  if (child > sz) { // no more children
+    return;
+  }
+  else if (child + 1 > sz) { // only one child
+    heapSwap(array, k, child);
+  }
+  else if (array[child + 1] < array[child]) { // first child is larger
+    heapSwap(array, k, child);
+    heapSink(array, child);
+  }
+  else if(array[child] < array[child + 1]) { // second child is larger
+    heapSwap(array, k, child + 1);
+    heapSink(array, child + 1);
+  }
+}
+
+function heapSwap(array, p, q) {
+  var temp = array[p];
+  array[p] = array[q];
+  array[q] = temp;
 }
 
