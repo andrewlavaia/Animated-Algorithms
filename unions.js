@@ -21,7 +21,7 @@ function callUnion(arrSize, numUnions, pauseTime, unionAlgo) {
   $('#union-header').html('#0 : union( 0 , 0 )');
   $('.union-layer').html('');
   $('.unsorted').html('<ul></ul>');
-  $('.tree').html('<ul class="top-level"></ul>'); // create first ul for initial animat
+  $('.tree').html('<ul class="top-level"></ul>'); // create first ul 
   clearInterval(unionIntervalTimer);
   unionAnimationQueue.length = 0;
   unionSuppQueue.length = 0;
