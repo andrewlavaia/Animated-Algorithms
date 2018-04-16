@@ -2,7 +2,7 @@
 var treeAnimationQueue = []; // very slow -> n^2 Memory requirement
 var treeIntervalTimer = 1000; 
 var treeCallNum = 0;
-
+var bstRoot; // needed for BST and Red Black BST
 
 // Initially hide #tree-wrapper div
 $('#tree-wrapper').hide();
@@ -25,28 +25,34 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
 
   // Create an empty array
   var array = [];
-  array.push(0); // add first item so that index starts at 1
+
+  if (treeAlgo == "tree-heap") {
+    array.push(0); // add first item so that index starts at 1
+  }
+  
   for (var i = 0; i < numNodes; i++) {
     var p = Math.floor(Math.random() * 1000);  // 0 through 1000 - 1
 
     if (treeAlgo == "tree-heap") {
       insertNodeHeap(array, p); 
+
+      array.push(p);
+      array.push('insertComplete');
+      treeAnimationQueue.push(array.slice()); // add copy of array with p and type at end
+      array.pop();
+      array.pop();
     } 
     else if (treeAlgo == "tree-bst") {
-      insertNodeBST(array, p); 
+      insertNodeBST(p); 
     } 
     else if (treeAlgo == "tree-redblackbst") {      
       insertNodeRBBST(array, p);
     }
 
-    array.push(p);
-    array.push('insertComplete');
-    treeAnimationQueue.push(array.slice()); // add copy of array with p and type at end
-    array.pop();
-    array.pop();
 
   }
 
+  console.log(bstRoot);
   treeIntervalTimer = drawTrees(pauseTime, treeAlgo);
 }
 
@@ -62,8 +68,6 @@ function drawTrees(pauseTime, treeAlgo) {
         treeCallNum++;
         $('#tree-header').html('#' + treeCallNum + ' : insert( ' + p + ' )');
       }
-
-
 
       if (treeAlgo == "tree-heap") {
         heapDrawTree(array, p, pauseTime);
@@ -101,8 +105,8 @@ function insertNodeHeap(array, p) {
   heapSwim(array, array.length - 1, p); // swim last element
 }
 
-function insertNodeBST(array, p) {
-  array.push(p);
+function insertNodeBST(key) {
+  bstRoot = recursiveBSTPut(bstRoot, key);
 }
 
 function insertNodeRBBST(array, p) {
@@ -156,7 +160,6 @@ function heapSwap(array, q, u, p) {
 }
 
 function heapDrawTree(array, p, pauseTime) {
-  
   $('#tree-layers .tree').html('');
   $('#tree-layers .tree').append(
     '<ul class="top-level"><li id="tree-node-' + array[0] + '">' +
@@ -182,5 +185,39 @@ function heapDrawTree(array, p, pauseTime) {
 
   $('#tree-node-' + p + ' span').css('background-color', 'red');
   $('#tree-node-' + p).children().find('span').css('background-color', 'white');
+}
 
+// -------------------
+// BST functions
+// ------------------- 
+
+function Node(key) {
+  this.key = key;
+  this.left = null;
+  this.right = null; 
+}
+
+function recursiveBSTPut(node, key) {
+
+  // Key not found, return new node
+  if (node == null) {
+     return new Node(key);
+  }
+
+  // Key found
+  if (node.key == key) {
+    // update value (not needed)
+  }
+
+  // call recursion on left node
+  if (key < node.key) {
+    node.left = recursiveBSTPut(node.left, key);
+  }
+
+  // call recursion on right node 
+  if (node.key < key) {
+    node.right = recursiveBSTPut(node.right, key);
+  }
+
+  return node;
 }
