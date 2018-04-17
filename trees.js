@@ -25,6 +25,7 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
 
   // Create an empty array
   var array = [];
+  array.length = 0;
 
   if (treeAlgo == "tree-heap") {
     array.push(0); // add first item so that index starts at 1
@@ -52,6 +53,10 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
 
   }
 
+  //BSTtoSortedArray(array, bstRoot);
+  BSTtoLevelOrderArray(array, bstRoot);
+
+  console.log(array);
   console.log(bstRoot);
   treeIntervalTimer = drawTrees(pauseTime, treeAlgo);
 }
@@ -220,4 +225,39 @@ function recursiveBSTPut(node, key) {
   }
 
   return node;
+}
+
+function BSTtoSortedArray(array, node) {
+  if (node == null)
+    return;
+
+  node.left = BSTtoSortedArray(array, node.left);
+  array.push(node.key);
+  node.right = BSTtoSortedArray(array, node.right);
+
+  return node;
+}
+
+function BSTtoLevelOrderArray(array, node) {
+  
+  if (node == null)
+    return;
+
+  var q = [];
+  q.push(node);
+
+  while (q.length > 0) {
+
+    var newNode = q.shift();
+    array.push(newNode.key);
+    
+    if (newNode.left != null) {
+      q.push(newNode.left);
+    }
+
+    if (newNode.right != null) {
+      q.push(newNode.right);
+    }
+  }
+
 }
