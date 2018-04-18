@@ -261,3 +261,34 @@ function BSTtoLevelOrderArray(array, node) {
   }
 
 }
+
+function BSTDrawTree(array, p, pauseTime) {
+
+  $('#tree-layers .tree').html('');
+  $('#tree-layers .tree').append(
+    '<ul class="top-level"><li id="tree-node-' + array[0] + '">' +
+    '<span>' + array[0] + '</span>' +
+    '</li></ul>');
+  
+  var parent = 0;
+  for (var i = 1; i < array.length; i++) {
+    if (i < parent) {
+      $('#tree-node-' + array[parent]).append(
+        '<ul><li id="tree-node-' + array[i] + '">' +
+        '<span>' + array[i] + '</span>' +
+        '</li></ul>');
+    }
+    else if (i > i - 1 && i < parent) {
+      $('#tree-node-' + array[i - 1]).parent().append(
+        '<li id="tree-node-' + array[i] + '">' +
+        '<span>' + array[i] + '</span>' +
+        '</li>');
+      parent = parent + 1;
+    }
+  }
+
+  $('#tree-node-' + p + ' span').css('background-color', 'red');
+  $('#tree-node-' + p).children().find('span').css('background-color', 'white');
+
+  }
+}
