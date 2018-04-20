@@ -45,17 +45,16 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
       array.pop();
     } 
     else if (treeAlgo == "tree-bst") {
-      insertNodeBST(p); 
-      
+      insertNodeBST(array, p); 
+
       array.length = 0;
-      BSTtoLevelOrderArray(array, bstRoot);
-      
-      //console.log(array.slice());
+      array.push(JSON.stringify(bstRoot));
       array.push(p);
-      array.push('insertInitial');
-      treeAnimationQueue.push(array.slice()); // add copy of array with p and type at end
+      array.push('insertComplete');
+      treeAnimationQueue.push(array.slice());
       array.pop();
       array.pop();
+  
     } 
     else if (treeAlgo == "tree-redblackbst") {      
       insertNodeRBBST(array, p);
@@ -74,11 +73,10 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
 function drawTrees(pauseTime, treeAlgo) {
   return setInterval(function() {
     if (treeAnimationQueue.length > 0) {
-      console.log(treeAnimationQueue[0]);
       var type = treeAnimationQueue[0].pop(); // swap, insertInitial, insertComplete
       var p = treeAnimationQueue[0].pop(); // grab p
       var array = treeAnimationQueue[0].slice(); // copy array
-      array.shift(); // get rid of original 0 
+      console.log(array);
 
       if (type == "insertInitial") {
         treeCallNum++;
@@ -86,12 +84,11 @@ function drawTrees(pauseTime, treeAlgo) {
       }
 
       if (treeAlgo == "tree-heap") {
+        array.shift(); // get rid of original 0 
         heapDrawTree(array, p, pauseTime);
       }
       else if (treeAlgo == "tree-bst") {
-        //console.log(bstRoot); 
-        //console.log(array);
-        BSTDrawTree(bstRoot, p, pauseTime); // array is actually a BST
+        BSTDrawTree(JSON.parse(array), p, pauseTime); // array is actually a BST
       } 
       else if (treeAlgo == "tree-redblackbst") {
         $('.tree-display').html(array);
@@ -123,8 +120,19 @@ function insertNodeHeap(array, p) {
   heapSwim(array, array.length - 1, p); // swim last element
 }
 
-function insertNodeBST(key) {
+function insertNodeBST(array, key) {
   bstRoot = recursiveBSTPut(bstRoot, key);
+
+  array.length = 0; // clear array
+  // pass JSON version of object and parse it 
+  // back into an object when retrieving
+  array.push(JSON.stringify(bstRoot));
+  
+  array.push(key);
+  array.push('insertInitial');
+  treeAnimationQueue.push(array.slice());
+  array.pop();
+  array.pop();
 }
 
 function insertNodeRBBST(array, p) {
@@ -240,6 +248,20 @@ function recursiveBSTPut(node, key) {
   return node;
 }
 
+// Performs a deep copy of a BST into
+// a new BST by recursively creating
+// copies of each node
+function copyBST(node) {
+  if (node == null)
+    return null;
+
+  var newNode = new Node(node.key);
+  newNode.left = copyBST(node.left);
+  newNode.right = copyBST(node.right);
+
+  return newNode;
+}
+
 function BSTtoSortedArray(array, node) {
   if (node == null)
     return;
@@ -278,6 +300,7 @@ function BSTtoLevelOrderArray(array, node) {
   }
 }
 
+/*
 function LevelOrderArraytoBST(array, node) {
   
   var q = [];
@@ -288,9 +311,13 @@ function LevelOrderArraytoBST(array, node) {
       node.left = new Node(array[(i*2)+1]);
       node.right = new Node(array[(i*2)+2]);
     }
-  }
+  } 
 }
+*/
 
+
+
+// Draw an unbalanced binary search tree
 function BSTDrawTree(node, p, pauseTime) {
 
   $('#tree-layers .tree').html('');
@@ -316,6 +343,7 @@ function BSTDrawTree(node, p, pauseTime) {
       q.push(current.right);
     }
 
+    //!!! add new CSS class for null entries?
     if(current.left != null && current.right != null) {
       $('#tree-node-' + current.key).append(
         '<ul><li id="tree-node-' + current.left.key + '">' +
@@ -342,6 +370,6 @@ function BSTDrawTree(node, p, pauseTime) {
     }
   }
 
-  //$('#tree-node-' + p + ' span').css('background-color', 'red');
-  //$('#tree-node-' + p).children().find('span').css('background-color', 'white');
+  $('#tree-node-' + p + ' span').css('background-color', 'red');
+  $('#tree-node-' + p).children().find('span').css('background-color', 'white');
 }
