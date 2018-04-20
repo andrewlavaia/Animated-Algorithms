@@ -22,6 +22,7 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
   $('.tree').html('<ul class="top-level"></ul>'); // create first ul for root
   clearInterval(treeIntervalTimer);
   treeAnimationQueue.length = 0;
+  bstRoot = null;
 
   // Create an empty array
   var array = [];
@@ -45,6 +46,16 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
     } 
     else if (treeAlgo == "tree-bst") {
       insertNodeBST(p); 
+      
+      array.length = 0;
+      BSTtoLevelOrderArray(array, bstRoot);
+      
+      //console.log(array.slice());
+      array.push(p);
+      array.push('insertInitial');
+      treeAnimationQueue.push(array.slice()); // add copy of array with p and type at end
+      array.pop();
+      array.pop();
     } 
     else if (treeAlgo == "tree-redblackbst") {      
       insertNodeRBBST(array, p);
@@ -54,16 +65,16 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
   }
 
   //BSTtoSortedArray(array, bstRoot);
-  BSTtoLevelOrderArray(array, bstRoot);
-
-  console.log(array);
-  console.log(bstRoot);
+  //BSTtoLevelOrderArray(array, bstRoot);
+  //console.log(array);
+  //console.log(bstRoot);
   treeIntervalTimer = drawTrees(pauseTime, treeAlgo);
 }
 
 function drawTrees(pauseTime, treeAlgo) {
   return setInterval(function() {
     if (treeAnimationQueue.length > 0) {
+      console.log(treeAnimationQueue[0]);
       var type = treeAnimationQueue[0].pop(); // swap, insertInitial, insertComplete
       var p = treeAnimationQueue[0].pop(); // grab p
       var array = treeAnimationQueue[0].slice(); // copy array
@@ -78,7 +89,9 @@ function drawTrees(pauseTime, treeAlgo) {
         heapDrawTree(array, p, pauseTime);
       }
       else if (treeAlgo == "tree-bst") {
-        $('.tree-display').html(array);
+        //console.log(bstRoot); 
+        //console.log(array);
+        BSTDrawTree(bstRoot, p, pauseTime); // array is actually a BST
       } 
       else if (treeAlgo == "tree-redblackbst") {
         $('.tree-display').html(array);
@@ -240,55 +253,95 @@ function BSTtoSortedArray(array, node) {
 
 function BSTtoLevelOrderArray(array, node) {
   
-  if (node == null)
+  if (node == null) {
     return;
+  }
 
   var q = [];
   q.push(node);
 
   while (q.length > 0) {
-
     var newNode = q.shift();
-    array.push(newNode.key);
+
+    if (newNode != null)
+      array.push(newNode.key);
+    else 
+      array.push(null);
     
-    if (newNode.left != null) {
+    if (newNode != null) {
       q.push(newNode.left);
     }
 
-    if (newNode.right != null) {
+    if (newNode != null) {
       q.push(newNode.right);
     }
   }
-
 }
 
-function BSTDrawTree(array, p, pauseTime) {
+function LevelOrderArraytoBST(array, node) {
+  
+  var q = [];
+  var node = new Node(array[0]);
+  for (var i = 0; i < array.length / 2; i++) {
+    if (array[i] != null) {
+      node = new Node(array[i]);
+      node.left = new Node(array[(i*2)+1]);
+      node.right = new Node(array[(i*2)+2]);
+    }
+  }
+}
+
+function BSTDrawTree(node, p, pauseTime) {
 
   $('#tree-layers .tree').html('');
+
+  // draw root;
   $('#tree-layers .tree').append(
-    '<ul class="top-level"><li id="tree-node-' + array[0] + '">' +
-    '<span>' + array[0] + '</span>' +
+    '<ul class="top-level"><li id="tree-node-' + node.key + '">' +
+    '<span>' + node.key + '</span>' +
     '</li></ul>');
+
+  // level order search through tree
+  var q = [];
+  q.push(node);
   
-  var parent = 0;
-  for (var i = 1; i < array.length; i++) {
-    if (i < parent) {
-      $('#tree-node-' + array[parent]).append(
-        '<ul><li id="tree-node-' + array[i] + '">' +
-        '<span>' + array[i] + '</span>' +
+  while (q.length > 0)  {
+    var current = q.shift(); 
+
+    if (current.left != null) {
+      q.push(current.left);
+    }
+
+    if (current.right != null) {
+      q.push(current.right);
+    }
+
+    if(current.left != null && current.right != null) {
+      $('#tree-node-' + current.key).append(
+        '<ul><li id="tree-node-' + current.left.key + '">' +
+        '<span>' + current.left.key + '</span>' +
+        '</li> <li id="tree-node-' + current.right.key + '">' +
+        '<span>' + current.right.key + '</span>' +
+        '</li></ul>');
+    } 
+    else if(current.left == null && current.right != null) {
+      $('#tree-node-' + current.key).append(
+        '<ul><li id="tree-node-' + current.key + '-null">' +
+        '<span> </span>' +
+        '</li> <li id="tree-node-' + current.right.key + '">' +
+        '<span>' + current.right.key + '</span>' +
         '</li></ul>');
     }
-    else if (i > i - 1 && i < parent) {
-      $('#tree-node-' + array[i - 1]).parent().append(
-        '<li id="tree-node-' + array[i] + '">' +
-        '<span>' + array[i] + '</span>' +
-        '</li>');
-      parent = parent + 1;
+    else if(current.left != null && current.right == null) {
+      $('#tree-node-' + current.key).append(
+        '<ul><li id="tree-node-' + current.left.key + '">' +
+        '<span>' + current.left.key + '</span>' +
+        '</li> <li id="tree-node-' + current.key + '-null">' +
+        '<span> </span>' +
+        '</li></ul>');
     }
   }
 
-  $('#tree-node-' + p + ' span').css('background-color', 'red');
-  $('#tree-node-' + p).children().find('span').css('background-color', 'white');
-
-  }
+  //$('#tree-node-' + p + ' span').css('background-color', 'red');
+  //$('#tree-node-' + p).children().find('span').css('background-color', 'white');
 }
