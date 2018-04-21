@@ -57,16 +57,20 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
   
     } 
     else if (treeAlgo == "tree-redblackbst") {      
-      insertNodeRBBST(array, p);
+      insertNodeRBBST(p);
+
+      array.length = 0;
+      array.push(JSON.stringify(bstRoot));
+      array.push(p);
+      array.push('insertComplete');
+      treeAnimationQueue.push(array.slice());
+      array.pop();
+      array.pop();
+
+      console.log(bstRoot);
     }
-
-
   }
 
-  //BSTtoSortedArray(array, bstRoot);
-  //BSTtoLevelOrderArray(array, bstRoot);
-  //console.log(array);
-  //console.log(bstRoot);
   treeIntervalTimer = drawTrees(pauseTime, treeAlgo);
 }
 
@@ -87,10 +91,10 @@ function drawTrees(pauseTime, treeAlgo) {
         heapDrawTree(array, p);
       }
       else if (treeAlgo == "tree-bst") {
-        BSTDrawTree(JSON.parse(array), p, type); // array is actually a BST
+        BSTDrawTree(JSON.parse(array), p, type, treeAlgo); // array is actually a BST
       } 
       else if (treeAlgo == "tree-redblackbst") {
-        $('.tree-display').html(array);
+        BSTDrawTree(JSON.parse(array), p, type, treeAlgo); // array is actually a BST
       }
 
       // Dequeue
@@ -138,8 +142,30 @@ function insertNodeBST(key) {
   bstRoot = recursiveBSTPut(bstRoot, key);
 }
 
-function insertNodeRBBST(array, p) {
-  array.push(p);
+function insertNodeRBBST(key) {
+  // pass JSON version of object and parse it 
+  // back into an object when retrieving
+  var array = []; 
+  
+  if (bstRoot == null) {
+    bstRoot = new RBNode(key);
+    bstRoot.color = 'black';
+    array.push(JSON.stringify(bstRoot));
+    array.push(key);
+    array.push('insertInitial');
+    treeAnimationQueue.push(array.slice());
+    array.pop();
+    array.pop();
+  } else {
+    array.push(JSON.stringify(bstRoot));
+    array.push(key);
+    array.push('insertInitial');
+    treeAnimationQueue.push(array.slice());
+    array.pop();
+    array.pop();
+
+    bstRoot = recursiveRBBSTPut(bstRoot, key);
+  }
 }
 
 // -------------------
@@ -262,14 +288,14 @@ function recursiveBSTPut(node, key) {
   return node;
 }
 
-// Performs a deep copy of a BST into
+// Performs a deep copy of a red black BST into
 // a new BST by recursively creating
 // copies of each node
 function copyBST(node) {
   if (node == null)
     return null;
 
-  var newNode = new Node(node.key);
+  var newNode = new RBNode(node.key);
   newNode.left = copyBST(node.left);
   newNode.right = copyBST(node.right);
 
@@ -315,8 +341,9 @@ function BSTtoLevelOrderArray(array, node) {
   }
 }
 
-// Draw an unbalanced binary search tree
-function BSTDrawTree(node, p, type) {
+// Draw an unbalanced binary search tree or a 
+// red black binary search tree
+function BSTDrawTree(node, p, type, treeType) {
 
   $('#tree-layers .tree').html('');
 
@@ -386,5 +413,99 @@ function RBNode(key) {
   this.key = key;
   this.left = null;
   this.right = null; 
-  this.color = red;
+  this.color = 'red';
+}
+
+function isRed(node) {
+  if (node == null || node == 'black')
+    return false;
+  else //if (node.color == 'red')
+    return true;
+}
+
+function rotateLeft(node) {
+  var x = JSON.parse(JSON.stringify(node.right));
+  node.right = JSON.parse(JSON.stringify(x.left));
+  x.left = JSON.parse(JSON.stringify(node));
+  x.color = node.color;
+  x.left.color = 'red';
+  return x;
+}
+
+function rotateRight(node) {
+  var x = JSON.parse(JSON.stringify(node.left));
+  node.left = JSON.parse(JSON.stringify(x.right));
+  x.right = JSON.parse(JSON.stringify(node));
+  x.color = node.color;
+  x.right.color = 'red';
+  return x;
+}
+
+function flipColors(node) {
+  node.color = 'red';
+  node.left.color = 'black';
+  node.right.color = 'black';
+}
+
+// Inserts node into BST
+function recursiveRBBSTPut(node, key) {
+  // Key not found, return new node
+  if (node == null) {
+     return new RBNode(key);
+  }
+
+  var array = []; 
+  array.push(JSON.stringify(bstRoot));
+  array.push(node.key);
+  array.push('swap');
+  treeAnimationQueue.push(array.slice());
+  array.pop();
+  array.pop();
+
+  // Key found
+  if (node.key == key) {
+
+  }
+
+  // call recursion on left node
+  if (key < node.key) {
+    node.left = recursiveRBBSTPut(node.left, key);
+  }
+
+  // call recursion on right node 
+  if (node.key < key) {
+    node.right = recursiveRBBSTPut(node.right, key);
+  }
+
+  // rotate left if red link is on right instead of left
+  if (isRed(node.right) && !isRed(node.left)) {
+    node = rotateLeft(node);
+  }
+
+  // rotate right if two red left links in a row
+  if (isRed(node.left) && isRed(node.left.left)) {
+    node = rotateRight(node);
+  }
+
+  // flip colors if both left and right children are red
+  if (isRed(node.left) && isRed(node.right)) {
+    flipColors(node);
+  }
+
+  return node;
+}
+
+// Performs a deep copy of a red black BST into
+// a new BST by recursively creating
+// copies of each node
+function copyBST(node) {
+  if (node == null)
+    return null;
+
+  var newNode = new RBNode(node.key);
+  newNode.color = node.color;
+  newNode.left = copyBST(node.left);
+  newNode.right = copyBST(node.right);
+
+  return newNode;
 }
