@@ -45,7 +45,7 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
       array.pop();
     } 
     else if (treeAlgo == "tree-bst") {
-      insertNodeBST(array, p); 
+      insertNodeBST(p); 
 
       array.length = 0;
       array.push(JSON.stringify(bstRoot));
@@ -76,7 +76,6 @@ function drawTrees(pauseTime, treeAlgo) {
       var type = treeAnimationQueue[0].pop(); // swap, insertInitial, insertComplete
       var p = treeAnimationQueue[0].pop(); // grab p
       var array = treeAnimationQueue[0].slice(); // copy array
-      console.log(array);
 
       if (type == "insertInitial") {
         treeCallNum++;
@@ -88,7 +87,7 @@ function drawTrees(pauseTime, treeAlgo) {
         heapDrawTree(array, p, pauseTime);
       }
       else if (treeAlgo == "tree-bst") {
-        BSTDrawTree(JSON.parse(array), p, pauseTime); // array is actually a BST
+        BSTDrawTree(JSON.parse(array), p, type); // array is actually a BST
       } 
       else if (treeAlgo == "tree-redblackbst") {
         $('.tree-display').html(array);
@@ -120,19 +119,26 @@ function insertNodeHeap(array, p) {
   heapSwim(array, array.length - 1, p); // swim last element
 }
 
-function insertNodeBST(array, key) {
-  bstRoot = recursiveBSTPut(bstRoot, key);
+function insertNodeBST(key) {
 
-  array.length = 0; // clear array
   // pass JSON version of object and parse it 
   // back into an object when retrieving
-  array.push(JSON.stringify(bstRoot));
+  var array = []; 
+  
+  if (bstRoot == null) 
+    array.push(JSON.stringify(new Node(key)));
+  else
+    array.push(JSON.stringify(bstRoot));
   
   array.push(key);
   array.push('insertInitial');
   treeAnimationQueue.push(array.slice());
   array.pop();
   array.pop();
+
+  bstRoot = recursiveBSTPut(bstRoot, key);
+
+
 }
 
 function insertNodeRBBST(array, p) {
@@ -230,9 +236,17 @@ function recursiveBSTPut(node, key) {
      return new Node(key);
   }
 
+  var array = []; 
+  array.push(JSON.stringify(bstRoot));
+  array.push(node.key);
+  array.push('swap');
+  treeAnimationQueue.push(array.slice());
+  array.pop();
+  array.pop();
+
   // Key found
   if (node.key == key) {
-    // update value (not needed)
+
   }
 
   // call recursion on left node
@@ -318,7 +332,7 @@ function LevelOrderArraytoBST(array, node) {
 
 
 // Draw an unbalanced binary search tree
-function BSTDrawTree(node, p, pauseTime) {
+function BSTDrawTree(node, p, type) {
 
   $('#tree-layers .tree').html('');
 
@@ -370,6 +384,12 @@ function BSTDrawTree(node, p, pauseTime) {
     }
   }
 
-  $('#tree-node-' + p + ' span').css('background-color', 'red');
+  if (type == 'swap')
+    $('#tree-node-' + p + ' span').css('background-color', 'red');
+  else if (type == 'insertComplete') 
+    $('#tree-node-' + p + ' span').css('background-color', 'blue');
+  else if (type == 'insertInitial')
+    $('#tree-node-' + p + ' span').css('background-color', 'blue');
+
   $('#tree-node-' + p).children().find('span').css('background-color', 'white');
 }
