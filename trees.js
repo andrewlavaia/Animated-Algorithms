@@ -84,7 +84,7 @@ function drawTrees(pauseTime, treeAlgo) {
 
       if (treeAlgo == "tree-heap") {
         array.shift(); // get rid of original 0 
-        heapDrawTree(array, p, pauseTime);
+        heapDrawTree(array, p);
       }
       else if (treeAlgo == "tree-bst") {
         BSTDrawTree(JSON.parse(array), p, type); // array is actually a BST
@@ -120,7 +120,6 @@ function insertNodeHeap(array, p) {
 }
 
 function insertNodeBST(key) {
-
   // pass JSON version of object and parse it 
   // back into an object when retrieving
   var array = []; 
@@ -137,8 +136,6 @@ function insertNodeBST(key) {
   array.pop();
 
   bstRoot = recursiveBSTPut(bstRoot, key);
-
-
 }
 
 function insertNodeRBBST(array, p) {
@@ -179,6 +176,7 @@ function heapSink(array, k, p) {
   }
 }
 
+// swaps two elements in a heap stored in an array
 function heapSwap(array, q, u, p) {
   var temp = array[q];
   array[q] = array[u];
@@ -191,7 +189,8 @@ function heapSwap(array, q, u, p) {
   array.pop();
 }
 
-function heapDrawTree(array, p, pauseTime) {
+// Draws a complete Binary Heap
+function heapDrawTree(array, p) {
   $('#tree-layers .tree').html('');
   $('#tree-layers .tree').append(
     '<ul class="top-level"><li id="tree-node-' + array[0] + '">' +
@@ -229,6 +228,7 @@ function Node(key) {
   this.right = null; 
 }
 
+// Inserts node into BST
 function recursiveBSTPut(node, key) {
 
   // Key not found, return new node
@@ -276,6 +276,7 @@ function copyBST(node) {
   return newNode;
 }
 
+// Inserts a BST into an array into sorted order
 function BSTtoSortedArray(array, node) {
   if (node == null)
     return;
@@ -287,8 +288,8 @@ function BSTtoSortedArray(array, node) {
   return node;
 }
 
+// Inserts a BST into an array in level order
 function BSTtoLevelOrderArray(array, node) {
-  
   if (node == null) {
     return;
   }
@@ -313,23 +314,6 @@ function BSTtoLevelOrderArray(array, node) {
     }
   }
 }
-
-/*
-function LevelOrderArraytoBST(array, node) {
-  
-  var q = [];
-  var node = new Node(array[0]);
-  for (var i = 0; i < array.length / 2; i++) {
-    if (array[i] != null) {
-      node = new Node(array[i]);
-      node.left = new Node(array[(i*2)+1]);
-      node.right = new Node(array[(i*2)+2]);
-    }
-  } 
-}
-*/
-
-
 
 // Draw an unbalanced binary search tree
 function BSTDrawTree(node, p, type) {
@@ -392,4 +376,15 @@ function BSTDrawTree(node, p, type) {
     $('#tree-node-' + p + ' span').css('background-color', 'blue');
 
   $('#tree-node-' + p).children().find('span').css('background-color', 'white');
+}
+
+// -------------------
+// Red Black BST functions
+// ------------------- 
+
+function RBNode(key) {
+  this.key = key;
+  this.left = null;
+  this.right = null; 
+  this.color = red;
 }
