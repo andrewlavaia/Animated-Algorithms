@@ -417,31 +417,37 @@ function RBNode(key) {
 }
 
 function isRed(node) {
-  if (node == null || node == 'black')
+  if (node === null || node === undefined || node.color === 'black')
     return false;
-  else //if (node.color == 'red')
+  else if (node.color === 'red')
     return true;
+  assert(0, "unreachable code in isRed(node)");
 }
 
 function rotateLeft(node) {
-  var x = JSON.parse(JSON.stringify(node.right));
-  node.right = JSON.parse(JSON.stringify(x.left));
-  x.left = JSON.parse(JSON.stringify(node));
+  assert(isRed(node.right), "right child in rotateLeft must be red");
+  var x = node.right;
+  node.right = node.right.left;
+  x.left = node;
   x.color = node.color;
   x.left.color = 'red';
+  //console.log(x.color);
   return x;
 }
 
 function rotateRight(node) {
-  var x = JSON.parse(JSON.stringify(node.left));
-  node.left = JSON.parse(JSON.stringify(x.right));
-  x.right = JSON.parse(JSON.stringify(node));
+  assert(isRed(node.left), "left child in rotateRight must be red");
+  var x = node.left;
+  node.left = node.left.right;
+  x.right = node;
   x.color = node.color;
   x.right.color = 'red';
   return x;
 }
 
 function flipColors(node) {
+  assert(isRed(node.left), "left child in flipColors must be red");
+  assert(isRed(node.right), "right child in flipColors must be red");
   node.color = 'red';
   node.left.color = 'black';
   node.right.color = 'black';
@@ -450,7 +456,7 @@ function flipColors(node) {
 // Inserts node into BST
 function recursiveRBBSTPut(node, key) {
   // Key not found, return new node
-  if (node == null) {
+  if (node === null) {
      return new RBNode(key);
   }
 
@@ -479,11 +485,13 @@ function recursiveRBBSTPut(node, key) {
 
   // rotate left if red link is on right instead of left
   if (isRed(node.right) && !isRed(node.left)) {
+    console.log('rotate left');
     node = rotateLeft(node);
   }
 
   // rotate right if two red left links in a row
   if (isRed(node.left) && isRed(node.left.left)) {
+    console.log('rotate right');
     node = rotateRight(node);
   }
 
@@ -491,6 +499,7 @@ function recursiveRBBSTPut(node, key) {
   if (isRed(node.left) && isRed(node.right)) {
     flipColors(node);
   }
+  //bstRoot.color = 'black';
 
   return node;
 }
