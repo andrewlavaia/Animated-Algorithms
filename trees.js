@@ -4,9 +4,6 @@ var treeIntervalTimer = 1000;
 var treeCallNum = 0;
 var bstRoot; // needed for BST and Red Black BST
 
-// Initially hide #tree-wrapper div
-$('#tree-wrapper').hide();
-
 $('input[name="tree-begin"]').on('click', function() {
   callConstructTree(
     parseInt($('input[name="tree-nodes"]').val(), 10),  
@@ -66,8 +63,6 @@ function callConstructTree(numNodes, pauseTime, treeAlgo) {
       treeAnimationQueue.push(array.slice());
       array.pop();
       array.pop();
-
-      console.log(bstRoot);
     }
   }
 
@@ -431,7 +426,6 @@ function rotateLeft(node) {
   x.left = node;
   x.color = node.color;
   x.left.color = 'red';
-  //console.log(x.color);
   return x;
 }
 
@@ -485,13 +479,11 @@ function recursiveRBBSTPut(node, key) {
 
   // rotate left if red link is on right instead of left
   if (isRed(node.right) && !isRed(node.left)) {
-    console.log('rotate left');
     node = rotateLeft(node);
   }
 
   // rotate right if two red left links in a row
   if (isRed(node.left) && isRed(node.left.left)) {
-    console.log('rotate right');
     node = rotateRight(node);
   }
 

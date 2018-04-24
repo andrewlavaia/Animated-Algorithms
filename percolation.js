@@ -1,6 +1,3 @@
-// Initially hide #union div
-$('#perc-wrapper').hide();
-
 var matrix = [];
 var unions = [];
 var nodeCount = [];

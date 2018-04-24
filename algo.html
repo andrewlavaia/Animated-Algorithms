@@ -10,11 +10,13 @@
 
 	<body>
 		<div id="page-wrapper">
-			<button id='sortNav'>Sorts</button>
-			<button id='unionNav'>Unions</button>
-			<button id='percNav'>Percolation</button>
-			<button id='treeNav'>Trees</button>
-			<div id="sort-wrapper">
+			<div class="tab">
+				<button id="sortNav" class="tablinks active">Sorts</button>
+				<button id="unionNav" class="tablinks">Unions</button>
+				<button id="percNav" class="tablinks">Percolation</button>
+				<button id="treeNav" class="tablinks">Trees</button>
+			</div>
+			<div id="sort-wrapper" class="tabcontent">
 				<h2>Array Sorting</h2>
 				<table>
 					<tr>
@@ -49,7 +51,7 @@
 				</table>
 		    <canvas id="sort-chart" width="600" height="300"></canvas>
 		  </div>
-		  <div id="union-wrapper">
+		  <div id="union-wrapper" class="tabcontent">
 		    	<h2> Unions </h2>
 		    	<table>
 					<tr>
@@ -88,7 +90,7 @@
 					</div>
 		    </div>
 	    </div>
-	    <div id="perc-wrapper"> 
+	    <div id="perc-wrapper" class="tabcontent"> 
 	    	<h2> Percolation </h2>
 	    	<table>
 					<tr>
@@ -114,7 +116,7 @@
 					</table>
 				</div>
 	    </div>
-	    <div id="tree-wrapper"> 
+	    <div id="tree-wrapper" class="tabcontent"> 
 	    	<h2> Trees </h2>
 	    	<table>
 					<tr>

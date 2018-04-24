@@ -62,29 +62,31 @@ function rMerge(array, lo, mid, hi) {
 }
 
 $('#sortNav').click(function() {
-	$('#sort-wrapper').show();
-	$('#union-wrapper').hide();
-	$('#perc-wrapper').hide();
-	$('#tree-wrapper').hide();
+	openWrapper(event, 'sort-wrapper');
 });
 
 $('#unionNav').click(function() {
-	$('#sort-wrapper').hide();
-	$('#union-wrapper').show();
-	$('#perc-wrapper').hide();
-	$('#tree-wrapper').hide();
+	openWrapper(event, 'union-wrapper');
 });
 
 $('#percNav').click(function() {
-	$('#sort-wrapper').hide();
-	$('#union-wrapper').hide();
-	$('#perc-wrapper').show();
-	$('#tree-wrapper').hide();
+	openWrapper(event, 'perc-wrapper');
 });
 
 $('#treeNav').click(function() {
-	$('#sort-wrapper').hide();
-	$('#union-wrapper').hide();
-	$('#perc-wrapper').hide();
-	$('#tree-wrapper').show();
+	openWrapper(event, 'tree-wrapper');
 });
+
+function openWrapper(evt, wrapName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(wrapName).style.display = "block";
+    evt.currentTarget.className += " active";
+}

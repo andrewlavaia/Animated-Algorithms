@@ -2,6 +2,9 @@
 var animationQueue = []; // very slow -> n^2 Memory requirement
 var intervalTimer; 
 
+// Initially show #sorts div
+$('#sort-wrapper').show();
+
 // ----------------
 // Draw Chart
 // ----------------
