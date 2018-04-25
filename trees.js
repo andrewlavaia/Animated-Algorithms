@@ -363,7 +363,6 @@ function BSTDrawTree(node, p, type, treeType) {
       q.push(current.right);
     }
 
-    //!!! add new CSS class for null entries?
     if(current.left != null && current.right != null) {
       $('#tree-node-' + current.key).append(
         '<ul><li id="tree-node-' + current.left.key + '">' +
@@ -388,14 +387,20 @@ function BSTDrawTree(node, p, type, treeType) {
         '<span> </span>' +
         '</li></ul>');
     }
+
+    if (treeType === "tree-redblackbst" && current.color === "red" && 
+        current.key != node.key /* root */) 
+      $('#tree-node-' + current.key + ' span').css('color', 'red');
+    else 
+      $('#tree-node-' + current.key + ' span').css('color', 'black');
   }
 
   if (type == 'swap')
-    $('#tree-node-' + p + ' span').css('background-color', 'red');
+    $('#tree-node-' + p + ' span').css('background-color', 'blue');
   else if (type == 'insertComplete') 
-    $('#tree-node-' + p + ' span').css('background-color', 'blue');
+    $('#tree-node-' + p + ' span').css('background-color', 'green');
   else if (type == 'insertInitial')
-    $('#tree-node-' + p + ' span').css('background-color', 'blue');
+    $('#tree-node-' + p + ' span').css('background-color', 'green');
 
   $('#tree-node-' + p).children().find('span').css('background-color', 'white');
 }
@@ -408,7 +413,7 @@ function RBNode(key) {
   this.key = key;
   this.left = null;
   this.right = null; 
-  this.color = 'red';
+  this.color = 'red'; // not optimized
 }
 
 function isRed(node) {
