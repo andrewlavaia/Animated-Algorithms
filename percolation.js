@@ -188,18 +188,28 @@ function colorShortestPath() {
 
 // Finds shortest path from top to bottom in an MxN matrix
 function BFS(row, col) {
+
+  // needs to be re-populated each call
+  visited.length = 0;
+  var colArray = newFilledArray(cols, 0);
+  for (var i = 0; i < rows; i++) {
+    visited.push(colArray.slice());
+  }
+
   var q = []; // queue
   q.push([row, col]);
 
-  var parents = []; // stores parent of each visited node
+  var parents = []; 
+  // stores parent of each visited node
+  // acts like a hash table that has a unique index for each node
+  // which allows for O(1) lookup during path construction
+  // key = (row * cols) + col, val = [parentRow, parentCol] 
 
   while (q.length > 0) {
 
     var cell = q.shift();
-    console.log(parents);
     row = cell[0];
     col = cell[1];
-    console.log(row + ", " + col);
 
     if(!hasVisited(row, col)) {
       visited[row][col] = 1;
@@ -215,7 +225,20 @@ function BFS(row, col) {
       && isConnected(0, (row * cols) + col)) 
     {
       paths.push(getPathToParent(row, col, parents));
-      return;
+      
+      // keep only shortest path
+      if (paths.length == 1) {
+        return;
+      } 
+      else if (paths[1].length < paths[0].length) {
+        paths.shift(); // pop front 
+        return;
+      }
+      else if (paths[0].length <= paths[1].length) {
+        paths.pop(); // pop back
+        return;
+      }
+      assert("unreachable");
     } 
 
     // check below
@@ -225,7 +248,7 @@ function BFS(row, col) {
       && isConnected(0, ((row + 1) * cols) + col)) 
     {
       q.push([row + 1, col]);
-      parents.push([row + 1, col, row, col]);
+      parents[((row + 1) * cols) + col] = [row, col];
     }
 
      // check left
@@ -233,10 +256,10 @@ function BFS(row, col) {
       && row > 1  // no point checking first row for right/left
       && !hasVisited(row, col - 1)
       && isOpen(row, col - 1) 
-      && isConnected(0, ((row) * cols) + col - 1)) 
+      && isConnected(0, (row * cols) + col - 1)) 
     { 
       q.push([row, col - 1]);
-      parents.push([row, col - 1, row, col]);
+      parents[(row * cols) + col - 1] = [row, col];
     }
 
     // check right
@@ -244,21 +267,20 @@ function BFS(row, col) {
       && row > 1  // no point checking first row for right/left
       && !hasVisited(row, col + 1)
       && isOpen(row, col + 1) 
-      && isConnected(0, ((row) * cols) + col + 1)) 
+      && isConnected(0, (row * cols) + col + 1)) 
     { 
       q.push([row, col + 1]);
-      parents.push([row, col + 1, row, col]);
+      parents[(row * cols) + col + 1] = [row, col];
     }
 
     // check above 
-    // only makes sense to check if at least third row
-    if (row > 2
+    if (row > 2     // check up only if at least third row
       && !hasVisited(row - 1, col)
       && isOpen(row - 1, col) 
       && isConnected(0, ((row - 1) * cols) + col)) 
     { 
       q.push([row - 1, col]);
-      parents.push([row - 1, col, row, col]);
+      parents[((row - 1) * cols) + col] = [row, col];
     }
 
   }
@@ -272,6 +294,12 @@ function getPathToParent(row, col, parents) {
     // Goal: achieve O(1) retrievals 
     // store each entry into its own id in parents array
     // unique id = (row * cols) + col
+    //console.log(parents[(row * cols) + col][0] + ", " + parents[(row * cols) + col][1]);
+    var temp = row;
+    row = parents[(row * cols) + col][0]; 
+    col = parents[(temp * cols) + col][1]; 
+    path.push([row, col]);
+    /*
     for (i = parents.length - 1; i >= 0; i--) {
       if(row === parents[i][0] && col === parents[i][1]) {
         console.log(parents[i][2] + ", " + parents[i][3]);
@@ -281,6 +309,7 @@ function getPathToParent(row, col, parents) {
         break; // escape for loop once parent has been found
       }
     }
+    */
   }
   return path;
 }
