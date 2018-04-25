@@ -15,7 +15,7 @@ secondToLastCol = 0;
 
 
 $('input[name="perc-begin"]').on('click', function() {
-  rows = parseInt($('input[name="perc-rows"]').val(), 10);
+  rows = parseInt($('input[name="perc-rows"]').val(), 10) + 2;
   cols = parseInt($('input[name="perc-cols"]').val(), 10);
   percIntervalTimer = parseInt($('input[name="perc-animation-time"]').val(), 10);
   callPerc(rows, cols, percIntervalTimer);
@@ -60,7 +60,8 @@ function callPerc(rows, cols, pauseTime) {
         nodeCount.push(1);
       }
 
-      table.append('<td id="perc-' + i + '-' + j + '"></td>')
+      if (i != 0 && i != rows - 1) // don't draw first or last row
+        table.append('<td id="perc-' + i + '-' + j + '"></td>');
     }
     matrix.push(rowArray.slice());
   }
@@ -176,16 +177,116 @@ function hasVisited(row, col) {
 function colorShortestPath() {
   for (var j = 0; j < cols; j++) {
     if (isOpen(1, j) && !hasVisited (1, j)) {  
-      DFS(1, j);
+      BFS(1, j);
     }
   }
 
   for (var n = 0; n < paths[0].length; n++) {
     $('#perc-' + paths[0][n][0] + '-' + paths[0][n][1]).css("background-color", "green");
   }
-
 }
 
+// Finds shortest path from top to bottom in an MxN matrix
+function BFS(row, col) {
+  var q = []; // queue
+  q.push([row, col]);
+
+  var parents = []; // stores parent of each visited node
+
+  while (q.length > 0) {
+
+    var cell = q.shift();
+    console.log(parents);
+    row = cell[0];
+    col = cell[1];
+    console.log(row + ", " + col);
+
+    if(!hasVisited(row, col)) {
+      visited[row][col] = 1;
+    }
+    else {
+      continue; // if already visited -> all paths from this node
+                // must be longer, so no need to check them 
+    }
+
+    // if second to last row is open and connected then we are done 
+    if (row == rows - 2 
+      && isOpen(row, col)
+      && isConnected(0, (row * cols) + col)) 
+    {
+      paths.push(getPathToParent(row, col, parents));
+      return;
+    } 
+
+    // check below
+    if (row + 1 < rows
+      && !hasVisited(row + 1, col)
+      && isOpen(row + 1, col) 
+      && isConnected(0, ((row + 1) * cols) + col)) 
+    {
+      q.push([row + 1, col]);
+      parents.push([row + 1, col, row, col]);
+    }
+
+     // check left
+    if (col > 0 
+      && row > 1  // no point checking first row for right/left
+      && !hasVisited(row, col - 1)
+      && isOpen(row, col - 1) 
+      && isConnected(0, ((row) * cols) + col - 1)) 
+    { 
+      q.push([row, col - 1]);
+      parents.push([row, col - 1, row, col]);
+    }
+
+    // check right
+    if (col + 1 < cols
+      && row > 1  // no point checking first row for right/left
+      && !hasVisited(row, col + 1)
+      && isOpen(row, col + 1) 
+      && isConnected(0, ((row) * cols) + col + 1)) 
+    { 
+      q.push([row, col + 1]);
+      parents.push([row, col + 1, row, col]);
+    }
+
+    // check above 
+    // only makes sense to check if at least third row
+    if (row > 2
+      && !hasVisited(row - 1, col)
+      && isOpen(row - 1, col) 
+      && isConnected(0, ((row - 1) * cols) + col)) 
+    { 
+      q.push([row - 1, col]);
+      parents.push([row - 1, col, row, col]);
+    }
+
+  }
+}
+
+function getPathToParent(row, col, parents) {
+  var path = [];
+  path.push([row, col]);
+  while (row != 1) {
+    // !!! parents array can definitely be further optimized
+    // Goal: achieve O(1) retrievals 
+    // store each entry into its own id in parents array
+    // unique id = (row * cols) + col
+    for (i = parents.length - 1; i >= 0; i--) {
+      if(row === parents[i][0] && col === parents[i][1]) {
+        console.log(parents[i][2] + ", " + parents[i][3]);
+        row = parents[i][2];
+        col = parents[i][3];
+        path.push([row, col]);
+        break; // escape for loop once parent has been found
+      }
+    }
+  }
+  return path;
+}
+
+
+// DFS is faster than BFS but doesn't always find shortest path
 function DFS(row, col) {
 
   // if first visit to node, change status and push to stack

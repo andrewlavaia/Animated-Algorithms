@@ -4,9 +4,6 @@ var unionSuppQueue = [];
 var unionIntervalTimer = 1000; 
 var unionCallNum = 0;
 
-// Initially hide #union div
-$('#union-wrapper').hide();
-
 $('input[name="union-begin"]').on('click', function() {
   callUnion(
     parseInt($('input[name="union-array-size"]').val(), 10), 
