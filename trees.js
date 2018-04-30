@@ -115,7 +115,7 @@ function insertNodeHeap(array, p) {
   array.pop();
   array.pop();
 
-  heapSwim(array, array.length - 1, p); // swim last element
+  treeHeapSwim(array, array.length - 1, p); // swim last element
 }
 
 function insertNodeBST(key) {
@@ -166,39 +166,39 @@ function insertNodeRBBST(key) {
 // -------------------
 // Heap functions
 // ------------------- 
-function heapSwim(array, k, p) {
+function treeHeapSwim(array, k, p) {
   if (k == 1) { // top node
     return;
   }
 
   var parent = parseInt(k/2, 10); // 2.5 converted to 2
   if(array[parent] < array[k]) {
-    heapSwap(array, k, parent, p);
-    heapSwim(array, parent, p);
+    treeHeapSwap(array, k, parent, p);
+    treeHeapSwim(array, parent, p);
   }
 }
 
-function heapSink(array, k, p) {
+function treeHeapSink(array, k, p) {
   var child = k * 2
   var sz = array.length - 1;
   if (child > sz) { // no more children
     return;
   }
   else if (child + 1 > sz) { // only one child
-    heapSwap(array, k, child, p);
+    treeHeapSwap(array, k, child, p);
   }
   else if (array[child + 1] < array[child]) { // first child is larger
-    heapSwap(array, k, child, p);
-    heapSink(array, child, p);
+    treeHeapSwap(array, k, child, p);
+    treeHeapSink(array, child, p);
   }
   else if(array[child] < array[child + 1]) { // second child is larger
-    heapSwap(array, k, child + 1, p);
-    heapSink(array, child + 1, p);
+    treeHeapSwap(array, k, child + 1, p);
+    treeHeapSink(array, child + 1, p);
   }
 }
 
 // swaps two elements in a heap stored in an array
-function heapSwap(array, q, u, p) {
+function treeHeapSwap(array, q, u, p) {
   var temp = array[q];
   array[q] = array[u];
   array[u] = temp;
@@ -496,7 +496,6 @@ function recursiveRBBSTPut(node, key) {
   if (isRed(node.left) && isRed(node.right)) {
     flipColors(node);
   }
-  //bstRoot.color = 'black';
 
   return node;
 }

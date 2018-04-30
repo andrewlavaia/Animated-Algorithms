@@ -62,22 +62,22 @@ function rMerge(array, lo, mid, hi) {
 }
 
 $('#sortNav').click(function() {
-	openWrapper(event, 'sort-wrapper');
+	openWrapper('sort-wrapper');
 });
 
 $('#unionNav').click(function() {
-	openWrapper(event, 'union-wrapper');
+	openWrapper('union-wrapper');
 });
 
 $('#percNav').click(function() {
-	openWrapper(event, 'perc-wrapper');
+	openWrapper('perc-wrapper');
 });
 
 $('#treeNav').click(function() {
-	openWrapper(event, 'tree-wrapper');
+	openWrapper('tree-wrapper');
 });
 
-function openWrapper(evt, wrapName) {
+function openWrapper(wrapName) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");
     for (i = 0; i < tabcontent.length; i++) {
@@ -88,5 +88,5 @@ function openWrapper(evt, wrapName) {
         tablinks[i].className = tablinks[i].className.replace(" active", "");
     }
     document.getElementById(wrapName).style.display = "block";
-    evt.currentTarget.className += " active";
+    document.getElementById(wrapName).className += " active";
 }
