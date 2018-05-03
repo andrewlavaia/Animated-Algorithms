@@ -56,7 +56,6 @@ var chart = new Chart(ctx, {
 
 $('input[name="sort-begin"]').on('click', function() {
   callSort(
-    //parseInt($('input[name="sort-array-size"]').val(), 10), 
     parseInt($('#sort-array-size').val(), 10),
     parseInt($('#sort-integer-range').val(), 10), 
     parseInt($('#sort-animation-time').val(), 10),

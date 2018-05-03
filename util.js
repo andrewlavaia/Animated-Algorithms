@@ -91,8 +91,11 @@ function openWrapper(wrapName) {
     document.getElementById(wrapName).className += " active";
 }
 
-// Update text value when moving slider
-$('.slidecontainer input').mousemove(function() {
+// Update text value when moving slider 
+$(document).on('mousemove mousedown mouseup touchmove touchstart touchend',
+'.slidecontainer input', function() {
     var id = $(this).attr("id");
     $('#' + id + '-val').text($(this).val());
 });
+
+ 		 
