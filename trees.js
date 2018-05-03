@@ -6,8 +6,8 @@ var bstRoot; // needed for BST and Red Black BST
 
 $('input[name="tree-begin"]').on('click', function() {
   callConstructTree(
-    parseInt($('input[name="tree-nodes"]').val(), 10),  
-    parseInt($('input[name="tree-animation-time"]').val(), 10),
+    parseInt($('#tree-nodes').val(), 10),  
+    parseInt($('#tree-animation-time').val(), 10),
     $('select[name="tree-select"]').val());
 });
 

@@ -217,4 +217,60 @@ body {
     to {opacity: 1;}
 }
 
+/* SLIDER INPUT BOXES */
+.slidecontainer {
+    width: 250px; /* Width of the outside container */
+}
 
+/* The slider itself */
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 250px; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */ 
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 15px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: rgb(54, 162, 235); 
+    cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: rgb(54, 162, 235); 
+    cursor: pointer; /* Cursor on hover */
+}
+
+.algo-submit {
+	height: 40px;
+	width: 200px;
+	margin: 25px 50px;
+	font-size: 1.3em;
+		 
+}
+
+.algo-submit:hover {
+	cursor: pointer;
+}
+
+.td-val {
+  min-width: 50px;
+  text-align: right;
+  padding-right: 30px;
+}

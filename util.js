@@ -90,3 +90,9 @@ function openWrapper(wrapName) {
     document.getElementById(wrapName).style.display = "block";
     document.getElementById(wrapName).className += " active";
 }
+
+// Update text value when moving slider
+$('.slidecontainer input').mousemove(function() {
+    var id = $(this).attr("id");
+    $('#' + id + '-val').text($(this).val());
+});

@@ -6,9 +6,9 @@ var unionCallNum = 0;
 
 $('input[name="union-begin"]').on('click', function() {
   callUnion(
-    parseInt($('input[name="union-array-size"]').val(), 10), 
-    parseInt($('input[name="union-rand-calls"]').val(), 10), 
-    parseInt($('input[name="union-animation-time"]').val(), 10),
+    parseInt($('#union-array-size').val(), 10), 
+    parseInt($('#union-rand-calls').val(), 10), 
+    parseInt($('#union-animation-time').val(), 10),
     $('select[name="union-select"]').val());
 });
 

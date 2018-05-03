@@ -15,9 +15,9 @@ secondToLastCol = 0;
 
 
 $('input[name="perc-begin"]').on('click', function() {
-  rows = parseInt($('input[name="perc-rows"]').val(), 10) + 2;
-  cols = parseInt($('input[name="perc-cols"]').val(), 10);
-  percIntervalTimer = parseInt($('input[name="perc-animation-time"]').val(), 10);
+  rows = parseInt($('#perc-rows').val(), 10) + 2;
+  cols = parseInt($('#perc-cols').val(), 10);
+  percIntervalTimer = parseInt($('#perc-animation-time').val(), 10);
   callPerc(rows, cols, percIntervalTimer);
 });
 
