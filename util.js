@@ -77,6 +77,10 @@ $('#treeNav').click(function() {
 	openWrapper('tree-wrapper');
 });
 
+$('#searchNav').click(function() {
+	openWrapper('search-wrapper');
+});
+
 function openWrapper(wrapName) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");

@@ -15,6 +15,7 @@
 				<button id="unionNav" class="tablinks">Unions</button>
 				<button id="percNav" class="tablinks">Percolation</button>
 				<button id="treeNav" class="tablinks">Trees</button>
+				<button id="searchNav" class="tablinks">Search</button>
 			</div>
 
 			<div id="sort-wrapper" class="tabcontent">
@@ -219,8 +220,65 @@
 					</div>
 				</div>
 	    </div>
-	  </div>
 
+	    <div id="search-wrapper" class="tabcontent"> 
+	    	<h2> Search </h2>
+	    	<table>
+					<tr>
+						<td>Number of Rows:</td>
+						<td class = "td-val"> 
+							<span id="search-rows-val">50</span>
+						</td>
+						<td>
+							<div class="slidecontainer">
+  							<input type="range" min="10" max="500" value="50" class="slider" id="search-rows">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Number of Columns:</td>
+						<td class = "td-val"> 
+							<span id="search-cols-val">50</span>
+						</td>
+						<td>
+							<div class="slidecontainer">
+  							<input type="range" min="10" max="500" value="50" class="slider" id="search-cols">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Animation Time (in ms): </td>
+						<td class = "td-val"> 
+							<span id="search-animation-time-val">50</span>
+						</td>
+						<td> 
+							<div class="slidecontainer">
+  							<input type="range" min="0" max="1000" value="50" class="slider" id="search-animation-time">
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>Search Algorithm:</td>
+						<td>
+							<select name="search-select">
+							  <option value="search-dfs" selected="selected">Depth First Search</option>
+							  <option value="search-bfs">Breadth First Search</option>
+							</select>
+						</td>
+					</tr>
+
+				</table>
+				<input type="button" class="algo-submit" name="create-maze" value="Create Maze">
+				<input type="button" class="algo-submit" name="search-begin" value="Solve Maze">
+				<div id="search-layer">
+					<table id="search-table">
+
+					</table>
+				</div>
+	    </div>
+
+
+	  </div> <!-- end page-wrapper -->
  		<script src="./jquery-3.3.1.min.js"></script>
  		<script src="./chart.js"></script>
 	  <script src="./util.js"></script>
@@ -228,6 +286,7 @@
     <script src="./unions.js"></script>
     <script src="./percolation.js"></script>
     <script src="./trees.js"></script>
+    <script src="./search.js"></script>
 
 	</body>
 </html>
