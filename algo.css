@@ -171,6 +171,18 @@ body {
 	border: 1px solid black;
 }
 
+#search-table {
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+#search-table td {
+  margin: 0px;
+  padding: 0px;
+  width: 10px;
+  height: 10px;
+}
+
 /* NAVIGATION */
 
 /* Style the tab */
