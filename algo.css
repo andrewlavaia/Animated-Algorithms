@@ -172,6 +172,9 @@ body {
 }
 
 #search-table {
+  position: relative;
+  top: 30px;
+  clear: both;
   border-spacing: 0px;
   border-collapse: collapse;
 }
@@ -181,6 +184,17 @@ body {
   padding: 0px;
   width: 10px;
   height: 10px;
+}
+
+.float-wrapper {
+  float: left;
+  padding: 5px 20px 5px 20px;
+  margin-right: 10px;
+  border: 1px dashed black;
+}
+
+#search-wrapper .float-wrapper td {
+  padding: 0px 10px;
 }
 
 /* NAVIGATION */
@@ -232,6 +246,10 @@ body {
 /* SLIDER INPUT BOXES */
 .slidecontainer {
     width: 250px; /* Width of the outside container */
+}
+
+#search-wrapper .slidecontainer {
+    width: 100px;
 }
 
 /* The slider itself */

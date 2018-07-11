@@ -223,53 +223,71 @@
 
 	    <div id="search-wrapper" class="tabcontent"> 
 	    	<h2> Search </h2>
-	    	<table>
-					<tr>
-						<td>Number of Rows:</td>
-						<td class = "td-val"> 
-							<span id="search-rows-val">10</span>
-						</td>
-						<td>
-							<div class="slidecontainer">
-  							<input type="range" min="4" max="100" value="10" class="slider" id="search-rows">
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>Number of Columns:</td>
-						<td class = "td-val"> 
-							<span id="search-cols-val">10</span>
-						</td>
-						<td>
-							<div class="slidecontainer">
-  							<input type="range" min="4" max="100" value="10" class="slider" id="search-cols">
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>Animation Time (in ms): </td>
-						<td class = "td-val"> 
-							<span id="search-animation-time-val">50</span>
-						</td>
-						<td> 
-							<div class="slidecontainer">
-  							<input type="range" min="0" max="1000" value="50" class="slider" id="search-animation-time">
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>Search Algorithm:</td>
-						<td>
-							<select name="search-select">
-							  <option value="search-dfs" selected="selected">Depth First Search</option>
-							  <option value="search-bfs">Breadth First Search</option>
-							</select>
-						</td>
-					</tr>
-
-				</table>
-				<input type="button" class="algo-submit" name="create-maze" value="Create Maze">
-				<input type="button" class="algo-submit" name="search-begin" value="Solve Maze">
+	    	<div class="float-wrapper">
+	    		<h4> Maze Creation Parameters</h4>
+		    	<table>
+						<tr>
+							<td>Number of Rows:</td>
+							<td class = "td-val"> 
+								<span id="search-rows-val">10</span>
+							</td>
+							<td>
+								<div class="slidecontainer">
+	  							<input type="range" min="4" max="100" value="10" class="slider" id="search-rows">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>Number of Columns:</td>
+							<td class = "td-val"> 
+								<span id="search-cols-val">10</span>
+							</td>
+							<td>
+								<div class="slidecontainer">
+	  							<input type="range" min="4" max="100" value="10" class="slider" id="search-cols">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>Animation Time (in ms): </td>
+							<td class = "td-val"> 
+								<span id="maze-creation-animation-time-val">0</span>
+							</td>
+							<td> 
+								<div class="slidecontainer">
+	  							<input type="range" min="0" max="1000" value="0" class="slider" id="maze-creation-animation-time">
+								</div>
+							</td>
+						</tr>
+					</table>
+					<input type="button" class="algo-submit" name="create-maze" value="Create Maze">
+				</div>
+				<div class="float-wrapper">
+					<h4> Maze Solving Parameters</h4>
+		    	<table>
+						<tr>
+							<td>Animation Time (in ms): </td>
+							<td class = "td-val"> 
+								<span id="search-animation-time-val">50</span>
+							</td>
+							<td> 
+								<div class="slidecontainer">
+	  							<input type="range" min="0" max="1000" value="50" class="slider" id="search-animation-time">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>Search Algorithm:</td>
+							<td class="td-val">
+								<select name="search-select">
+								  <option value="search-dfs" selected="selected">Depth First Search</option>
+								  <option value="search-bfs">Breadth First Search</option>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<input type="button" class="algo-submit" name="search-begin" value="Solve Maze">
+				</div>
 				<div id="search-layer">
 					<table id="search-table">
 					</table>

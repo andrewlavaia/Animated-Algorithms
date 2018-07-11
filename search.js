@@ -13,15 +13,13 @@ var searchAnimationQueue = [];
 $('input[name="create-maze"]').on('click', function() {
   rows = parseInt($('#search-rows').val(), 10);
   cols = parseInt($('#search-cols').val(), 10);
-  searchIntervalTimer = parseInt($('#search-animation-time').val(), 10);
+  searchIntervalTimer = parseInt($('#maze-creation-animation-time').val(), 10);
   createMaze(rows, cols, searchIntervalTimer);
 });
 
 $('input[name="search-begin"]').on('click', function() {
-  rows = parseInt($('#search-rows').val(), 10);
-  cols = parseInt($('#search-cols').val(), 10);
   searchIntervalTimer = parseInt($('#search-animation-time').val(), 10);
-  callSearch(rows, cols, searchIntervalTimer);
+  solveMaze(maze, $('select[name="search-select"]').val(), searchIntervalTimer);
 });
 
 class Graph {
@@ -125,11 +123,11 @@ class Graph {
 
 function createMaze(rows, cols, pauseTime) {
   clearInterval(searchIntervalTimer);
+  searchAnimationQueue.length = 0;
   maze = new Graph(rows, cols);
   var table = $('#search-table');
   table.html('');
 
-	// create matrix and populate DOM
   for (var i = 0; i < rows; i++) {
     table.append('<tr></tr>');
     for (var j = 0; j < cols; j++) {
@@ -184,8 +182,25 @@ function removeBorder(maze, v, w) {
 
 }
 
-function callSearch(rows, cols, pauseTime) {
+function solveMaze(maze, searchAlgo, pauseTime) {
   clearInterval(searchIntervalTimer);
+  if (!maze) {
+  	return;
+  }
+
+  for (var i = 0; i < rows; i++) {
+    for (var j = 0; j < cols; j++) {
+      $('#search-' + i + '-' + j).css("background-color", "white");
+    }
+  }
+
+  var start = Math.floor(Math.random() * maze.vertexCnt);
+  var end = Math.floor(Math.random() * maze.vertexCnt);
+  var start_el = '#search-' + maze.getRow(start) + '-' + maze.getCol(start);
+	var end_el = '#search-' + maze.getRow(end) + '-' + maze.getCol(end);
+	$(start_el).css("background-color", "red");
+	$(end_el).css("background-color", "green");
+
   searchIntervalTimer = drawSearch(pauseTime);
 }
 
