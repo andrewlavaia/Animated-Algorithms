@@ -1,5 +1,4 @@
-// Add a way to create mazes
-	// needs a list of vertices and all their connected edges
+// TO DO
 // add a way to solve the maze using BFS and DFS
 // animate BFS and DFS (current path should be one color, 
 //		visited nodes should become grayed out, final path
@@ -18,18 +17,11 @@ $('input[name="create-maze"]').on('click', function() {
 });
 
 $('input[name="search-begin"]').on('click', function() {
-  rows = parseInt($('#search-rows').val(), 10) + 2;
+  rows = parseInt($('#search-rows').val(), 10);
   cols = parseInt($('#search-cols').val(), 10);
   searchIntervalTimer = parseInt($('#search-animation-time').val(), 10);
   callSearch(rows, cols, searchIntervalTimer);
 });
-
-class Vertex {
-	constructor(x, y) {
-		this.x = x;
-		this.y = y;
-	}
-}
 
 class Graph {
 	constructor(rows, cols) {
@@ -76,6 +68,12 @@ class Graph {
 	getV(row, col) {
 		return (row * cols) + col;
 	}
+	getRow(v) {
+		return parseInt(v / cols, 10);
+	}
+	getCol(v) {
+		return v % cols;
+	}
 	up(row, col) {
 		if (row > 0)
 			return this.getV(row - 1, col);
@@ -100,117 +98,84 @@ class Graph {
 		else
 			return false;
 	}
-
 	hasVisited(row, col) {
 		return visited[this.getV(row, col)];
 	}
+	getUnvisitedNeighbor(v) {
+		var neighbors = [];
+		var x = this.getRow(v);
+		var y = this.getCol(v);
 
+		if (this.right(x, y) && !this.visited[this.right(x, y)])
+			neighbors.push(this.right(x, y));
+		if (this.up(x, y) && !this.visited[this.up(x, y)])
+			neighbors.push(this.up(x, y));
+		if (this.left(x, y) && !this.visited[this.left(x, y)]) 
+			neighbors.push(this.left(x, y));
+		if (this.down(x, y) && !this.visited[this.down(x, y)])  
+			neighbors.push(this.down(x, y));
+
+		if (neighbors.length == 0) 
+			return false;
+		
+		return neighbors[Math.floor(Math.random() * neighbors.length)];
+	}
 }
-
-// g = new Graph(5,5);
-// g.addEdge(g.getV(0,0), g.getV(0,1));
-// console.log(g.getEdges(g.getV(0,0)));
-// console.log(g.getEdges(g.getV(0,1)));
-// g.addEdge(g.getV(0,1), g.getV(0,0));
-// console.log(g.getEdges(g.getV(0,0)));
-// console.log(g.getEdges(g.getV(0,1)));
-
 
 function createMaze(rows, cols, pauseTime) {
   clearInterval(searchIntervalTimer);
-
   maze = new Graph(rows, cols);
-
   var table = $('#search-table');
-	// var rowArray = [];
-	// start = new Vertex(0, 0);
-	// end = new Vertex(rows - 1, cols - 1);
+  table.html('');
 
 	// create matrix and populate DOM
   for (var i = 0; i < rows; i++) {
-    // rowArray.length = 0;
     table.append('<tr></tr>');
     for (var j = 0; j < cols; j++) {
-      // rowArray.push(new Vertex(i, j));	
-
       table.append('<td id="search-' + i + '-' + j + '"></td>');
       $('#search-' + i + '-' + j).css("border-top", "1px solid black");
       $('#search-' + i + '-' + j).css("border-left", "1px solid black");
       $('#search-' + i + '-' + j).css("border-bottom", "1px solid black");
       $('#search-' + i + '-' + j).css("border-right", "1px solid black");
-
-    	if (maze.left(i,j) != false) 
-      	maze.addEdge(maze.getV(i, j), maze.left(i, j));
-      if (maze.up(i,j) != false)
-     		maze.addEdge(maze.getV(i, j), maze.up(i, j));
-      if (maze.right(i,j) != false)
-      	maze.addEdge(maze.getV(i, j), maze.right(i, j));
-      if (maze.down(i,j) != false)
-      	maze.addEdge(maze.getV(i, j), maze.down(i, j));
-      
-     	// else if (i == 0 && j == 0) {
-     	// 	maze.addEdge(maze.getV(i, j), maze.right(i, j));
-	     //  maze.addEdge(maze.getV(i, j), maze.down(i, j));
-     	// }
-     	// else if (i == 0 && j == cols - 1) {
-     	// 	maze.addEdge(maze.getV(i, j), maze.left(i, j));
-	     //  maze.addEdge(maze.getV(i, j), maze.down(i, j));
-     	// }
-     	// else if (i == 0) {
-     	// 	maze.addEdge(maze.getV(i, j), maze.left(i, j));
-	     //  maze.addEdge(maze.getV(i, j), maze.down(i, j));
-     	// }     	
-     	// else if (i == rows - 1 && j == 0) {
-     	// 	maze.addEdge(maze.getV(i, j), maze.right(i, j));
-	     //  maze.addEdge(maze.getV(i, j), maze.up(i, j));
-     	// }     	
-     	// else if (i == rows - 1 && j == cols - 1) {
-     	// 	maze.addEdge(maze.getV(i, j), maze.left(i, j));
-	     //  maze.addEdge(maze.getV(i, j), maze.up(i, j));
-     	// }
-	
-      // $('#search-' + i + '-' + j).css("border-top", "1px solid black");
-      // if (i == rows - 1) {
-      // 	// $('#search-' + i + '-' + j).css("border-bottom", "1px solid black");
-      // }
-      // if (j == 0) {
-      // 	// $('#search-' + i + '-' + j).css("border-left", "1px solid black");
-      // } 
-      // if (j == cols - 1) {
-      // 	// $('#search-' + i + '-' + j).css("border-right", "1px solid black");
-      // }
-
-      // // Start
-      // if (i == start.x && j == start.y) {
-      // 	$('#search-' + i + '-' + j).css("border-left", "0px");
-      // } 
-
-      // // End
-      // if (i == end.x && j == end.y) {
-      // 	$('#search-' + i + '-' + j).css("border-right", "0px");
-      // }
-
     }
-    // matrix.push(rowArray.slice());
-
   }
 
-  // console.log(maze.visited);
-  // console.log(maze.getEdges(maze.getV(0,0)));
-  // maze.removeEdge(maze.getV(0,0), maze.getV(1,0));
-  // console.log(maze.getEdges(maze.getV(0,0)));
-  // console.log(maze.getEdges(maze.getV(1,0)));
-  // console.log(maze.getRandomEdge(maze.getV(0,0)));
-  // console.log(maze.getEdges(rows*cols));
+  recurseMaze(maze, 0);
   searchIntervalTimer = drawMaze(pauseTime);
 }
 
 function recurseMaze(maze, v) {
-	visted[v] = 1;
-	w = maze.getRandEdge(v);
-	if (w != -1) {
-		maze.removeEdge(v, w);
+	maze.visited[v] = 1;
+	w = maze.getUnvisitedNeighbor(v);
+	while (w != false) {
+		maze.addEdge(v, w); 
+		removeBorder(maze, v, w);
 		recurseMaze(maze, w);
+		w = maze.getUnvisitedNeighbor(v);
+	}
+}
+
+function removeBorder(maze, v, w) {
+	var v_el = '#search-' + maze.getRow(v) + '-' + maze.getCol(v);
+	var w_el = '#search-' + maze.getRow(w) + '-' + maze.getCol(w);
+	var vx = maze.getRow(v);
+	var vy = maze.getCol(v);
+	
+	if (maze.right(vx, vy) === w) {
+		$(v_el).css("border-right", "none");
+		$(w_el).css("border-left", "none");
+	} 
+	else if (maze.up(vx, vy) === w) {
+		$(v_el).css("border-top", "none");
+		$(w_el).css("border-bottom", "none");
+	}
+	else if (maze.left(vx, vy) === w) {
+		$(v_el).css("border-left", "none");
+		$(w_el).css("border-right", "none");
+	}
+	else if (maze.down(vx, vy) === w) {
+		$(v_el).css("border-bottom", "none");
+		$(w_el).css("border-top", "none");
 	}
 
 }
