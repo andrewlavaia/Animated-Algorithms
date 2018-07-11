@@ -143,7 +143,7 @@ function drawChart(pauseTime) {
         chart.data.datasets[0].data = animationQueue.shift();
       }
       chart.update();
-    } else if (animationQueue == 0) {
+    } else if (animationQueue.length == 0) {
       clearInterval(intervalTimer);
     }
     

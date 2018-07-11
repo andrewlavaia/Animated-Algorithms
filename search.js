@@ -4,10 +4,11 @@
 //		visited nodes should become grayed out, final path
 //		should be colored another color)
 
+var maze;
 var rows;
 var cols;
 var searchIntervalTimer = 1000; 
-var maze;
+var searchAnimationQueue = [];
 
 $('input[name="create-maze"]').on('click', function() {
   rows = parseInt($('#search-rows').val(), 10);
@@ -141,15 +142,18 @@ function createMaze(rows, cols, pauseTime) {
   }
 
   recurseMaze(maze, 0);
-  searchIntervalTimer = drawMaze(pauseTime);
+  searchIntervalTimer = drawMaze(pauseTime);	
 }
 
 function recurseMaze(maze, v) {
 	maze.visited[v] = 1;
 	w = maze.getUnvisitedNeighbor(v);
 	while (w != false) {
-		maze.addEdge(v, w); 
-		removeBorder(maze, v, w);
+		maze.addEdge(v, w);
+		if (searchIntervalTimer === 0)
+			removeBorder(maze, v, w);
+		else
+			searchAnimationQueue.push([v, w]); 
 		recurseMaze(maze, w);
 		w = maze.getUnvisitedNeighbor(v);
 	}
@@ -187,11 +191,13 @@ function callSearch(rows, cols, pauseTime) {
 
 function drawMaze(pauseTime) {
   return setInterval(function() {
-
-  	console.log('creating maze one cell at a time');
-    
+	  if (searchAnimationQueue.length > 0) {
+	  	data = searchAnimationQueue.shift();
+	    removeBorder(maze, data[0], data[1]);
+	  } else if (searchAnimationQueue.length == 0) {
+	      clearInterval(searchIntervalTimer);
+	  }
   }, pauseTime);
-
 }
 
 function drawSearch(pauseTime) {
