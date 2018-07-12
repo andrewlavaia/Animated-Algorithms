@@ -59,7 +59,7 @@ $('input[name="search-begin"]').on('click', function() {
 // 	getRandEdge(v) {
 // 		var len = this.adj[v].length;
 // 		if (len == 0)
-// 			return -1;
+// 			return false;
 // 		else
 // 			return this.adj[v][Math.floor(Math.random() * len)]  
 // 	}
@@ -162,7 +162,10 @@ var Graph = function () {
 
 	Graph.prototype.getRandEdge = function getRandEdge(v) {
 		var len = this.adj[v].length;
-		if (len == 0) return -1;else return this.adj[v][Math.floor(Math.random() * len)];
+		if (len == 0) 
+			return false;
+		else 
+			return this.adj[v][Math.floor(Math.random() * len)];
 	};
 
 	Graph.prototype.getV = function getV(row, col) {
@@ -207,9 +210,25 @@ var Graph = function () {
 		if (this.left(x, y) && !this.visited[this.left(x, y)]) neighbors.push(this.left(x, y));
 		if (this.down(x, y) && !this.visited[this.down(x, y)]) neighbors.push(this.down(x, y));
 
-		if (neighbors.length == 0) return false;
+		if (neighbors.length == 0) 
+			return false;
 
 		return neighbors[Math.floor(Math.random() * neighbors.length)];
+	};
+
+	Graph.prototype.getUnvisitedEdge = function getUnvisitedEdge(v) {
+		var edges = this.getEdges(v).slice();
+		var unvisitedEdges = [];
+
+		for (var i = 0; i < edges.length; i++) {
+			if (!this.visited[edges[i]]) 
+				unvisitedEdges.push(edges[i]);
+		}
+		
+		if (unvisitedEdges.length == 0) 
+			return false;
+
+		return unvisitedEdges[Math.floor(Math.random() * unvisitedEdges.length)];
 	};
 
 	return Graph;
@@ -240,7 +259,7 @@ function createMaze(rows, cols, pauseTime) {
 function recurseMaze(maze, v) {
 	maze.visited[v] = 1;
 	w = maze.getUnvisitedNeighbor(v);
-	while (w != false) {
+	while (w !== false) {
 		maze.addEdge(v, w);
 		if (searchIntervalTimer === 0)
 			removeBorder(maze, v, w);
@@ -296,21 +315,51 @@ function solveMaze(maze, searchAlgo, pauseTime) {
 	$(start_el).css("background-color", "rgba(255, 0, 0, 0.3)");
 	$(end_el).css("background-color", "rgba(0, 255, 0, 0.3)");
 
+	mazeDFS(maze, start, start, end);
   searchIntervalTimer = drawSearch(pauseTime);
 }
 
-function mazeDFS(maze, start, end) {
+function mazeDFS(maze, v, start, end) {
+	maze.visited[v] = 1;
+	for (var i = 0; i < maze.getEdges(v).length; i++) {
+		if (maze.visited[end])
+			return;
+		var w = maze.adj[v][i];
+		if (!maze.visited[w]) {
+			if (searchIntervalTimer === 0)
+				colorV(maze, v, start, end, 'unvisited');
+			else
+				searchAnimationQueue.push([v, w, start, end, 'unvisited']);
+			mazeDFS(maze, w, start, end);
+		} 
+	}
+	if (!maze.visited[end]) {
+		if (searchIntervalTimer === 0) 
+			colorV(maze, v, start, end, 'visited');
+		else 
+			searchAnimationQueue.push([v, w, start, end, 'visited']);
+	}
+}
 
+function colorV(maze, v, start, end, type) {
+	if (v === start || v === end)
+		return;
+
+	var v_el = '#search-' + maze.getRow(v) + '-' + maze.getCol(v);
+	if (type === 'unvisited') 
+		$(v_el).css("background-color", "rgba(0, 0, 255, 0.3)");		
+	else
+		$(v_el).css("background-color", "white");
 }
 
 function drawMaze(pauseTime) {
   return setInterval(function() {
 	  if (searchAnimationQueue.length > 0) {
-	  	data = searchAnimationQueue.shift();
+	  	var data = searchAnimationQueue.shift();
 	    removeBorder(maze, data[0], data[1]);
 	  } 
 	  else {
-	      clearInterval(searchIntervalTimer);
+	    clearInterval(searchIntervalTimer);
 	  }
   }, pauseTime);
 }
@@ -318,7 +367,8 @@ function drawMaze(pauseTime) {
 function drawSearch(pauseTime) {
   return setInterval(function() {
   	if (searchAnimationQueue.length > 0) {
-  	
+  		var data = searchAnimationQueue.shift();
+  		colorV(maze, data[0], data[2], data[3], data[4]);
   	}
   	else {
   		clearInterval(searchIntervalTimer);
