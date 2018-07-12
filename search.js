@@ -22,104 +22,198 @@ $('input[name="search-begin"]').on('click', function() {
   solveMaze(maze, $('select[name="search-select"]').val(), searchIntervalTimer);
 });
 
-class Graph {
-	constructor(rows, cols) {
+// class Graph {
+// 	constructor(rows, cols) {
+// 		this.adj = [];
+// 		this.visited = [];
+// 		this.edgeCnt = 0;
+// 		this.vertexCnt = 0;
+// 		this.rows = rows;
+// 		this.cols = cols;
+// 		for (var i = 0; i < rows*cols; i++) {
+// 			this.adj[i] = [];
+// 			this.visited[i] = 0;
+// 			this.vertexCnt++;
+// 		}
+// 	}
+
+// 	addEdge(v, w) {
+// 		if (this.adj[v].indexOf(w) == -1) { // edge does not exist yet 
+// 			this.adj[v].push(w);
+// 			this.adj[w].push(v);
+// 			this.edgeCnt++;
+// 		}
+// 	}
+
+// 	removeEdge(v, w) {
+// 		if (this.adj[v].indexOf(w) > -1) {
+// 			this.adj[v].splice(this.adj[v].indexOf(w), 1);
+// 			this.adj[w].splice(this.adj[w].indexOf(v), 1);
+// 		}
+// 	}
+
+// 	getEdges(v) {
+// 		return this.adj[v];
+// 	}
+
+// 	getRandEdge(v) {
+// 		var len = this.adj[v].length;
+// 		if (len == 0)
+// 			return -1;
+// 		else
+// 			return this.adj[v][Math.floor(Math.random() * len)]  
+// 	}
+
+// 	getV(row, col) {
+// 		return (row * cols) + col;
+// 	}
+// 	getRow(v) {
+// 		return parseInt(v / cols, 10);
+// 	}
+// 	getCol(v) {
+// 		return v % cols;
+// 	}
+// 	up(row, col) {
+// 		if (row > 0)
+// 			return this.getV(row - 1, col);
+// 		else 
+// 			return false;
+// 	} 
+// 	left(row, col) {
+// 		if (col > 0)
+// 			return this.getV(row, col - 1);
+// 		else
+// 			return false;
+// 	}
+// 	right(row, col) {
+// 		if (col < this.cols - 1)
+// 			return this.getV(row, col + 1);
+// 		else 
+// 			return false;
+// 	}
+// 	down(row, col) {
+// 		if (row < this.rows - 1)
+// 			return this.getV(row + 1, col);
+// 		else
+// 			return false;
+// 	}
+// 	hasVisited(row, col) {
+// 		return visited[this.getV(row, col)];
+// 	}
+// 	getUnvisitedNeighbor(v) {
+// 		var neighbors = [];
+// 		var x = this.getRow(v);
+// 		var y = this.getCol(v);
+
+// 		if (this.right(x, y) && !this.visited[this.right(x, y)])
+// 			neighbors.push(this.right(x, y));
+// 		if (this.up(x, y) && !this.visited[this.up(x, y)])
+// 			neighbors.push(this.up(x, y));
+// 		if (this.left(x, y) && !this.visited[this.left(x, y)]) 
+// 			neighbors.push(this.left(x, y));
+// 		if (this.down(x, y) && !this.visited[this.down(x, y)])  
+// 			neighbors.push(this.down(x, y));
+
+// 		if (neighbors.length == 0) 
+// 			return false;
+		
+// 		return neighbors[Math.floor(Math.random() * neighbors.length)];
+// 	}
+// }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Graph = function () {
+	function Graph(rows, cols) {
+		_classCallCheck(this, Graph);
+
 		this.adj = [];
 		this.visited = [];
 		this.edgeCnt = 0;
 		this.vertexCnt = 0;
 		this.rows = rows;
 		this.cols = cols;
-		for (var i = 0; i < rows*cols; i++) {
+		for (var i = 0; i < rows * cols; i++) {
 			this.adj[i] = [];
 			this.visited[i] = 0;
 			this.vertexCnt++;
 		}
 	}
 
-	addEdge(v, w) {
-		if (this.adj[v].indexOf(w) == -1) { // edge does not exist yet 
+	Graph.prototype.addEdge = function addEdge(v, w) {
+		if (this.adj[v].indexOf(w) == -1) {
+			// edge does not exist yet 
 			this.adj[v].push(w);
 			this.adj[w].push(v);
 			this.edgeCnt++;
 		}
-	}
+	};
 
-	removeEdge(v, w) {
+	Graph.prototype.removeEdge = function removeEdge(v, w) {
 		if (this.adj[v].indexOf(w) > -1) {
 			this.adj[v].splice(this.adj[v].indexOf(w), 1);
 			this.adj[w].splice(this.adj[w].indexOf(v), 1);
 		}
-	}
+	};
 
-	getEdges(v) {
+	Graph.prototype.getEdges = function getEdges(v) {
 		return this.adj[v];
-	}
+	};
 
-	getRandEdge(v) {
+	Graph.prototype.getRandEdge = function getRandEdge(v) {
 		var len = this.adj[v].length;
-		if (len == 0)
-			return -1;
-		else
-			return this.adj[v][Math.floor(Math.random() * len)]  
-	}
+		if (len == 0) return -1;else return this.adj[v][Math.floor(Math.random() * len)];
+	};
 
-	getV(row, col) {
-		return (row * cols) + col;
-	}
-	getRow(v) {
+	Graph.prototype.getV = function getV(row, col) {
+		return row * cols + col;
+	};
+
+	Graph.prototype.getRow = function getRow(v) {
 		return parseInt(v / cols, 10);
-	}
-	getCol(v) {
+	};
+
+	Graph.prototype.getCol = function getCol(v) {
 		return v % cols;
-	}
-	up(row, col) {
-		if (row > 0)
-			return this.getV(row - 1, col);
-		else 
-			return false;
-	} 
-	left(row, col) {
-		if (col > 0)
-			return this.getV(row, col - 1);
-		else
-			return false;
-	}
-	right(row, col) {
-		if (col < this.cols - 1)
-			return this.getV(row, col + 1);
-		else 
-			return false;
-	}
-	down(row, col) {
-		if (row < this.rows - 1)
-			return this.getV(row + 1, col);
-		else
-			return false;
-	}
-	hasVisited(row, col) {
+	};
+
+	Graph.prototype.up = function up(row, col) {
+		if (row > 0) return this.getV(row - 1, col);else return false;
+	};
+
+	Graph.prototype.left = function left(row, col) {
+		if (col > 0) return this.getV(row, col - 1);else return false;
+	};
+
+	Graph.prototype.right = function right(row, col) {
+		if (col < this.cols - 1) return this.getV(row, col + 1);else return false;
+	};
+
+	Graph.prototype.down = function down(row, col) {
+		if (row < this.rows - 1) return this.getV(row + 1, col);else return false;
+	};
+
+	Graph.prototype.hasVisited = function hasVisited(row, col) {
 		return visited[this.getV(row, col)];
-	}
-	getUnvisitedNeighbor(v) {
+	};
+
+	Graph.prototype.getUnvisitedNeighbor = function getUnvisitedNeighbor(v) {
 		var neighbors = [];
 		var x = this.getRow(v);
 		var y = this.getCol(v);
 
-		if (this.right(x, y) && !this.visited[this.right(x, y)])
-			neighbors.push(this.right(x, y));
-		if (this.up(x, y) && !this.visited[this.up(x, y)])
-			neighbors.push(this.up(x, y));
-		if (this.left(x, y) && !this.visited[this.left(x, y)]) 
-			neighbors.push(this.left(x, y));
-		if (this.down(x, y) && !this.visited[this.down(x, y)])  
-			neighbors.push(this.down(x, y));
+		if (this.right(x, y) && !this.visited[this.right(x, y)]) neighbors.push(this.right(x, y));
+		if (this.up(x, y) && !this.visited[this.up(x, y)]) neighbors.push(this.up(x, y));
+		if (this.left(x, y) && !this.visited[this.left(x, y)]) neighbors.push(this.left(x, y));
+		if (this.down(x, y) && !this.visited[this.down(x, y)]) neighbors.push(this.down(x, y));
 
-		if (neighbors.length == 0) 
-			return false;
-		
+		if (neighbors.length == 0) return false;
+
 		return neighbors[Math.floor(Math.random() * neighbors.length)];
-	}
-}
+	};
+
+	return Graph;
+}();
 
 function createMaze(rows, cols, pauseTime) {
   clearInterval(searchIntervalTimer);
@@ -190,6 +284,7 @@ function solveMaze(maze, searchAlgo, pauseTime) {
 
   for (var i = 0; i < rows; i++) {
     for (var j = 0; j < cols; j++) {
+    	maze.visited[maze.getV(i, j)] = 0;
       $('#search-' + i + '-' + j).css("background-color", "white");
     }
   }
@@ -198,10 +293,14 @@ function solveMaze(maze, searchAlgo, pauseTime) {
   var end = Math.floor(Math.random() * maze.vertexCnt);
   var start_el = '#search-' + maze.getRow(start) + '-' + maze.getCol(start);
 	var end_el = '#search-' + maze.getRow(end) + '-' + maze.getCol(end);
-	$(start_el).css("background-color", "red");
-	$(end_el).css("background-color", "green");
+	$(start_el).css("background-color", "rgba(255, 0, 0, 0.3)");
+	$(end_el).css("background-color", "rgba(0, 255, 0, 0.3)");
 
   searchIntervalTimer = drawSearch(pauseTime);
+}
+
+function mazeDFS(maze, start, end) {
+
 }
 
 function drawMaze(pauseTime) {
@@ -209,7 +308,8 @@ function drawMaze(pauseTime) {
 	  if (searchAnimationQueue.length > 0) {
 	  	data = searchAnimationQueue.shift();
 	    removeBorder(maze, data[0], data[1]);
-	  } else if (searchAnimationQueue.length == 0) {
+	  } 
+	  else {
 	      clearInterval(searchIntervalTimer);
 	  }
   }, pauseTime);
@@ -217,8 +317,12 @@ function drawMaze(pauseTime) {
 
 function drawSearch(pauseTime) {
   return setInterval(function() {
-
-  	console.log('drawing maze one cell at a time');
+  	if (searchAnimationQueue.length > 0) {
+  	
+  	}
+  	else {
+  		clearInterval(searchIntervalTimer);
+  	}
     
   }, pauseTime);
 
