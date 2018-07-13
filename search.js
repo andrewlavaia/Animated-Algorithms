@@ -315,7 +315,10 @@ function solveMaze(maze, searchAlgo, pauseTime) {
 	$(start_el).css("background-color", "rgba(255, 0, 0, 0.3)");
 	$(end_el).css("background-color", "rgba(0, 255, 0, 0.3)");
 
-	mazeDFS(maze, start, start, end);
+	if (searchAlgo == 'search-dfs')
+		mazeDFS(maze, start, start, end);
+	else if (searchAlgo == 'search-bfs')
+		mazeBFS(maze, start, end);
   searchIntervalTimer = drawSearch(pauseTime);
 }
 
@@ -338,6 +341,30 @@ function mazeDFS(maze, v, start, end) {
 			colorV(maze, v, start, end, 'visited');
 		else 
 			searchAnimationQueue.push([v, w, start, end, 'visited']);
+	}
+}
+
+function mazeBFS(maze, start, end) {
+	var q = [];
+	for (var i = 0; i < maze.getEdges(start).length; i++) {
+		q.push(maze.adj[start][i]);
+	}
+	maze.visited[start] = 1;
+
+	while (q.length != 0) {
+		var v = q.shift();
+		maze.visited[v] = 1;
+
+		searchAnimationQueue.push([v, false, start, end, 'unvisited']);
+
+		if (maze.visited[end] === 1)
+			return;
+
+		for (var i = 0; i < maze.getEdges(v).length; i++) {
+			if(!maze.visited[maze.adj[v][i]]) {
+				q.push(maze.adj[v][i]);
+			}
+		}
 	}
 }
 
