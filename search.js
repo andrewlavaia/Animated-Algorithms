@@ -216,19 +216,14 @@ var Graph = function () {
 		return neighbors[Math.floor(Math.random() * neighbors.length)];
 	};
 
-	Graph.prototype.getUnvisitedEdge = function getUnvisitedEdge(v) {
-		var edges = this.getEdges(v).slice();
-		var unvisitedEdges = [];
-
-		for (var i = 0; i < edges.length; i++) {
-			if (!this.visited[edges[i]]) 
-				unvisitedEdges.push(edges[i]);
+	Graph.prototype.getUnvisitedEdgeCnt = function getUnvisitedEdgeCnt(v) {
+		var cnt = 0;
+		var len = this.adj[v].length;
+		for (var i = 0; i < len; i++) {
+			if (!this.visited[this.adj[v][i]]) 
+				cnt++;
 		}
-		
-		if (unvisitedEdges.length == 0) 
-			return false;
-
-		return unvisitedEdges[Math.floor(Math.random() * unvisitedEdges.length)];
+		return cnt;
 	};
 
 	return Graph;
@@ -346,8 +341,12 @@ function mazeDFS(maze, v, start, end) {
 
 function mazeBFS(maze, start, end) {
 	var q = [];
+	var sources = []; // adjacency array that stores where the vertex was accessed from
+	sources.length = maze.vertexCnt;
+
 	for (var i = 0; i < maze.getEdges(start).length; i++) {
 		q.push(maze.adj[start][i]);
+		sources[maze.adj[start][i]] = start;
 	}
 	maze.visited[start] = 1;
 
@@ -355,14 +354,30 @@ function mazeBFS(maze, start, end) {
 		var v = q.shift();
 		maze.visited[v] = 1;
 
-		searchAnimationQueue.push([v, false, start, end, 'unvisited']);
+		if (maze.visited[end] === 1) {
+			var v = sources[end];
+			while (v !== start) {
+				if (searchIntervalTimer === 0)
+					colorV(maze, v, start, end, 'unvisited'); 
+				else 
+					searchAnimationQueue.push([v, false, start, end, 'unvisited']);
 
-		if (maze.visited[end] === 1)
+				v = sources[v];
+			}
 			return;
+		}
+		
+		if (searchIntervalTimer === 0)
+			colorV(maze, v, start, end, 'visited'); 
+		else 
+			searchAnimationQueue.push([v, false, start, end, 'visited']);
 
 		for (var i = 0; i < maze.getEdges(v).length; i++) {
-			if(!maze.visited[maze.adj[v][i]]) {
+			var cnt = 0;
+			if (!maze.visited[maze.adj[v][i]]) {
 				q.push(maze.adj[v][i]);
+				sources[maze.adj[v][i]] = v;
+				cnt++;
 			}
 		}
 	}
@@ -371,12 +386,11 @@ function mazeBFS(maze, start, end) {
 function colorV(maze, v, start, end, type) {
 	if (v === start || v === end)
 		return;
-
 	var v_el = '#search-' + maze.getRow(v) + '-' + maze.getCol(v);
 	if (type === 'unvisited') 
 		$(v_el).css("background-color", "rgba(0, 0, 255, 0.3)");		
 	else
-		$(v_el).css("background-color", "white");
+		$(v_el).css("background-color", "rgba(0, 0, 0, 0.10)");
 }
 
 function drawMaze(pauseTime) {
