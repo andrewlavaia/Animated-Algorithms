@@ -314,7 +314,7 @@ function solveMaze(maze, searchAlgo, pauseTime) {
 		mazeDFS(maze, start, start, end);
 	else if (searchAlgo == 'search-bfs')
 		mazeBFS(maze, start, end);
-  searchIntervalTimer = drawSearch(pauseTime);
+  searchIntervalTimer = drawSearch(pauseTime, searchAlgo);
 }
 
 function mazeDFS(maze, v, start, end) {
@@ -405,11 +405,19 @@ function drawMaze(pauseTime) {
   }, pauseTime);
 }
 
-function drawSearch(pauseTime) {
+function drawSearch(pauseTime, searchAlgo) {
   return setInterval(function() {
   	if (searchAnimationQueue.length > 0) {
   		var data = searchAnimationQueue.shift();
   		colorV(maze, data[0], data[2], data[3], data[4]);
+
+  		// display final solution for BFS instantly
+  		while (searchAnimationQueue.length > 0 && 
+  				searchAlgo === 'search-bfs' && 
+  				data[4] === 'unvisited') {
+  			var data = searchAnimationQueue.shift();
+  			colorV(maze, data[0], data[2], data[3], data[4]);
+  		}
   	}
   	else {
   		clearInterval(searchIntervalTimer);
