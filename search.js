@@ -229,6 +229,62 @@ var Graph = function () {
 	return Graph;
 }();
 
+var PriorityQueue = function () {
+	function PriorityQueue() {
+		_classCallCheck(this, PriorityQueue);
+		this.pq = [];
+		this.pq.push(0);  // keep index 0 free
+		this.size = 0;
+	}
+
+	PriorityQueue.prototype.less = function less(i, j) {
+		return this.pq[i] < this.pq[j];
+	}
+
+	PriorityQueue.prototype.pop = function pop(value) {
+		var min = pq[1];
+		this.swap(1, this.size);
+		this.size--;
+		this.pq.pop();
+		this.sinkDown(1);
+		return min;
+	}
+
+	PriorityQueue.prototype.push = function push(value) {
+		var index = this.pq.length;
+		this.pq.push(value);
+		this.size++;
+		this.swimUp(index);
+	}
+
+	PriorityQueue.prototype.sinkDown = function sinkDown(k) {
+		while (2 * k <= this.size) {
+			var j = 2 * k;
+			if (j < this.size && this.less(j + 1, j))
+				j++;
+			if (!this.less(j, k))
+				break;
+			this.swap(k, j);
+			k = j;
+		}
+	}
+
+	PriorityQueue.prototype.swap = function swap(i, j) {
+		var tmp = this.pq[i];
+		this.pq[i] = this.pq[j];
+		this.pq[j] = tmp;
+	}
+
+	PriorityQueue.prototype.swimUp = function swimUp(k) {
+		while (k > 1 && this.less(k, Math.floor(k / 2))){
+			this.swap(Math.floor(k / 2), k);
+			k = Math.floor(k / 2);
+		}
+	}
+
+	return PriorityQueue;
+}();
+
 function createMaze(rows, cols, pauseTime) {
   clearInterval(searchIntervalTimer);
   searchAnimationQueue.length = 0;
@@ -314,6 +370,8 @@ function solveMaze(maze, searchAlgo, pauseTime) {
 		mazeDFS(maze, start, start, end);
 	else if (searchAlgo == 'search-bfs')
 		mazeBFS(maze, start, end);
+	else if (searchAlgo == 'search-dijkstra')
+		mazeDijkstra(maze, start, end);
   searchIntervalTimer = drawSearch(pauseTime, searchAlgo);
 }
 
@@ -382,6 +440,29 @@ function mazeBFS(maze, start, end) {
 		}
 	}
 }
+
+function mazeDijkstra(maze, start, end) {
+	var paths = [];
+	var pathsDistance = [];
+	var pq = [];
+	
+	for (var i = 0; i < self.rows * self.cols; i++) {
+		pathsDistance[i] = Infinity;
+	}
+	pathsDistance[start] = 0;
+
+	while (pq.length != 0) {
+		var distance, vertexNum;
+		[distance, vertexNum] = pq.pop();
+		vertex = maze.vertices[vertexNum];
+		relaxEdges(maze, vertex);
+	}
+}
+
+function relaxEdges(maze, vertex) {
+
+}
+
 
 function colorV(maze, v, start, end, type) {
 	if (v === start || v === end)
