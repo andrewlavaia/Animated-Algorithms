@@ -1,9 +1,3 @@
-// TO DO
-// add a way to solve the maze using BFS and DFS
-// animate BFS and DFS (current path should be one color, 
-//		visited nodes should become grayed out, final path
-//		should be colored another color)
-
 var maze;
 var rows;
 var cols;
@@ -22,7 +16,7 @@ $('input[name="search-begin"]').on('click', function() {
   solveMaze(maze, $('select[name="search-select"]').val(), searchIntervalTimer);
 });
 
-// class Graph {
+// class Grid {
 // 	constructor(rows, cols) {
 // 		this.adj = [];
 // 		this.visited = [];
@@ -123,9 +117,9 @@ $('input[name="search-begin"]').on('click', function() {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Graph = function () {
-	function Graph(rows, cols) {
-		_classCallCheck(this, Graph);
+var Grid = function () {
+	function Grid(rows, cols) {
+		_classCallCheck(this, Grid);
 
 		this.adj = [];
 		this.visited = [];
@@ -140,7 +134,7 @@ var Graph = function () {
 		}
 	}
 
-	Graph.prototype.addEdge = function addEdge(v, w) {
+	Grid.prototype.addEdge = function addEdge(v, w) {
 		if (this.adj[v].indexOf(w) == -1) {
 			// edge does not exist yet 
 			this.adj[v].push(w);
@@ -149,18 +143,18 @@ var Graph = function () {
 		}
 	};
 
-	Graph.prototype.removeEdge = function removeEdge(v, w) {
+	Grid.prototype.removeEdge = function removeEdge(v, w) {
 		if (this.adj[v].indexOf(w) > -1) {
 			this.adj[v].splice(this.adj[v].indexOf(w), 1);
 			this.adj[w].splice(this.adj[w].indexOf(v), 1);
 		}
 	};
 
-	Graph.prototype.getEdges = function getEdges(v) {
+	Grid.prototype.getEdges = function getEdges(v) {
 		return this.adj[v];
 	};
 
-	Graph.prototype.getRandEdge = function getRandEdge(v) {
+	Grid.prototype.getRandEdge = function getRandEdge(v) {
 		var len = this.adj[v].length;
 		if (len == 0) 
 			return false;
@@ -168,39 +162,39 @@ var Graph = function () {
 			return this.adj[v][Math.floor(Math.random() * len)];
 	};
 
-	Graph.prototype.getV = function getV(row, col) {
+	Grid.prototype.getV = function getV(row, col) {
 		return row * cols + col;
 	};
 
-	Graph.prototype.getRow = function getRow(v) {
+	Grid.prototype.getRow = function getRow(v) {
 		return parseInt(v / cols, 10);
 	};
 
-	Graph.prototype.getCol = function getCol(v) {
+	Grid.prototype.getCol = function getCol(v) {
 		return v % cols;
 	};
 
-	Graph.prototype.up = function up(row, col) {
+	Grid.prototype.up = function up(row, col) {
 		if (row > 0) return this.getV(row - 1, col);else return false;
 	};
 
-	Graph.prototype.left = function left(row, col) {
+	Grid.prototype.left = function left(row, col) {
 		if (col > 0) return this.getV(row, col - 1);else return false;
 	};
 
-	Graph.prototype.right = function right(row, col) {
+	Grid.prototype.right = function right(row, col) {
 		if (col < this.cols - 1) return this.getV(row, col + 1);else return false;
 	};
 
-	Graph.prototype.down = function down(row, col) {
+	Grid.prototype.down = function down(row, col) {
 		if (row < this.rows - 1) return this.getV(row + 1, col);else return false;
 	};
 
-	Graph.prototype.hasVisited = function hasVisited(row, col) {
+	Grid.prototype.hasVisited = function hasVisited(row, col) {
 		return visited[this.getV(row, col)];
 	};
 
-	Graph.prototype.getUnvisitedNeighbor = function getUnvisitedNeighbor(v) {
+	Grid.prototype.getUnvisitedNeighbor = function getUnvisitedNeighbor(v) {
 		var neighbors = [];
 		var x = this.getRow(v);
 		var y = this.getCol(v);
@@ -216,7 +210,7 @@ var Graph = function () {
 		return neighbors[Math.floor(Math.random() * neighbors.length)];
 	};
 
-	Graph.prototype.getUnvisitedEdgeCnt = function getUnvisitedEdgeCnt(v) {
+	Grid.prototype.getUnvisitedEdgeCnt = function getUnvisitedEdgeCnt(v) {
 		var cnt = 0;
 		var len = this.adj[v].length;
 		for (var i = 0; i < len; i++) {
@@ -226,69 +220,13 @@ var Graph = function () {
 		return cnt;
 	};
 
-	return Graph;
-}();
-
-var PriorityQueue = function () {
-	function PriorityQueue() {
-		_classCallCheck(this, PriorityQueue);
-		this.pq = [];
-		this.pq.push(0);  // keep index 0 free
-		this.size = 0;
-	}
-
-	PriorityQueue.prototype.less = function less(i, j) {
-		return this.pq[i] < this.pq[j];
-	}
-
-	PriorityQueue.prototype.pop = function pop(value) {
-		var min = pq[1];
-		this.swap(1, this.size);
-		this.size--;
-		this.pq.pop();
-		this.sinkDown(1);
-		return min;
-	}
-
-	PriorityQueue.prototype.push = function push(value) {
-		var index = this.pq.length;
-		this.pq.push(value);
-		this.size++;
-		this.swimUp(index);
-	}
-
-	PriorityQueue.prototype.sinkDown = function sinkDown(k) {
-		while (2 * k <= this.size) {
-			var j = 2 * k;
-			if (j < this.size && this.less(j + 1, j))
-				j++;
-			if (!this.less(j, k))
-				break;
-			this.swap(k, j);
-			k = j;
-		}
-	}
-
-	PriorityQueue.prototype.swap = function swap(i, j) {
-		var tmp = this.pq[i];
-		this.pq[i] = this.pq[j];
-		this.pq[j] = tmp;
-	}
-
-	PriorityQueue.prototype.swimUp = function swimUp(k) {
-		while (k > 1 && this.less(k, Math.floor(k / 2))){
-			this.swap(Math.floor(k / 2), k);
-			k = Math.floor(k / 2);
-		}
-	}
-
-	return PriorityQueue;
+	return Grid;
 }();
 
 function createMaze(rows, cols, pauseTime) {
   clearInterval(searchIntervalTimer);
   searchAnimationQueue.length = 0;
-  maze = new Graph(rows, cols);
+  maze = new Grid(rows, cols);
   var table = $('#search-table');
   table.html('');
 
@@ -370,8 +308,6 @@ function solveMaze(maze, searchAlgo, pauseTime) {
 		mazeDFS(maze, start, start, end);
 	else if (searchAlgo == 'search-bfs')
 		mazeBFS(maze, start, end);
-	else if (searchAlgo == 'search-dijkstra')
-		mazeDijkstra(maze, start, end);
   searchIntervalTimer = drawSearch(pauseTime, searchAlgo);
 }
 
@@ -440,29 +376,6 @@ function mazeBFS(maze, start, end) {
 		}
 	}
 }
-
-function mazeDijkstra(maze, start, end) {
-	var paths = [];
-	var pathsDistance = [];
-	var pq = [];
-	
-	for (var i = 0; i < self.rows * self.cols; i++) {
-		pathsDistance[i] = Infinity;
-	}
-	pathsDistance[start] = 0;
-
-	while (pq.length != 0) {
-		var distance, vertexNum;
-		[distance, vertexNum] = pq.pop();
-		vertex = maze.vertices[vertexNum];
-		relaxEdges(maze, vertex);
-	}
-}
-
-function relaxEdges(maze, vertex) {
-
-}
-
 
 function colorV(maze, v, start, end, type) {
 	if (v === start || v === end)

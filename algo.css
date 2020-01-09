@@ -34,7 +34,7 @@ body {
 	margin: 5px;
 	padding: 5px;
 	text-align: center;
-	width: 15px
+	width: 15px;
 	height: 15px;
 }
 
@@ -303,4 +303,21 @@ body {
   min-width: 50px;
   text-align: right;
   padding-right: 30px;
+}
+
+#graph-layer {
+  clear: both;
+  width: 800px;
+  height: 400px;
+}
+
+.graph-vertex {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border-color: black;
+  border-radius: 50%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  background: black;
 }
