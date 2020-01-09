@@ -81,6 +81,10 @@ $('#searchNav').click(function() {
 	openWrapper('search-wrapper');
 });
 
+$('#graphNav').click(function() {
+	openWrapper('graph-wrapper');
+});
+
 function openWrapper(wrapName) {
     var i, tabcontent, tablinks;
     tabcontent = document.getElementsByClassName("tabcontent");

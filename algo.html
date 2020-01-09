@@ -16,6 +16,7 @@
 				<button id="percNav" class="tablinks">Percolation</button>
 				<button id="treeNav" class="tablinks">Trees</button>
 				<button id="searchNav" class="tablinks">Search</button>
+				<button id="graphNav" class="tablinks">Graphs</button>
 			</div>
 
 			<div id="sort-wrapper" class="tabcontent">
@@ -293,18 +294,68 @@
 					<table id="search-table">
 					</table>
 				</div>
-	    </div>
+		</div>
 
+		<div id="graph-wrapper" class="tabcontent"> 
+	    	<h2> Graph </h2>
+	    	<div class="float-wrapper">
+	    		<h4> Graph Creation Parameters</h4>
+		    	<table>
+						<tr>
+							<td>Number of Vertices:</td>
+							<td class = "td-val"> 
+								<span id="search-rows-val">20</span>
+							</td>
+							<td>
+								<div class="slidecontainer">
+	  							<input type="range" min="4" max="100" value="20" class="slider" id="search-rows">
+								</div>
+							</td>
+						</tr>
+					</table>
+					<input type="button" class="algo-submit" name="create-graph" value="Create Graph">
+				</div>
+				<div class="float-wrapper">
+					<h4> Shortest Path Solving Parameters</h4>
+		    		<table>
+						<tr>
+							<td>Animation Time (in ms): </td>
+							<td class = "td-val"> 
+								<span id="graph-animation-time-val">50</span>
+							</td>
+							<td> 
+								<div class="slidecontainer">
+	  							<input type="range" min="0" max="1000" value="50" class="slider" id="graph-animation-time">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>Shortest Path Algorithm:</td>
+							<td class="td-val">
+								<select name="graph-select">
+								  <option value="graph-dijkstra" selected="selected">Dijkstra</option>
+								</select>
+							</td>
+						</tr>
+					</table>
+					<input type="button" class="algo-submit" name="graph-begin" value="Solve">
+				</div>
+				<div id="graph-layer">
+					<table id="graph-table">
+					</table>
+				</div>
+		</div>
 
 	  </div> <!-- end page-wrapper -->
- 		<script src="./jquery-3.3.1.min.js"></script>
- 		<script src="./chart.js"></script>
-	  <script src="./util.js"></script>
+ 	<script src="./jquery-3.3.1.min.js"></script>
+ 	<script src="./chart.js"></script>
+	<script src="./util.js"></script>
     <script src="./sorts.js"></script>
     <script src="./unions.js"></script>
     <script src="./percolation.js"></script>
     <script src="./trees.js"></script>
     <script src="./search.js"></script>
+    <script src="./graphs.js"></script>
 
 	</body>
 </html>
