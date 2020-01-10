@@ -69,21 +69,43 @@ var PriorityQueue = function () {
 	return PriorityQueue;
 }();
 
+var Vertex = function() {
+    function Vertex(index, x, y) {
+        _classCallCheck(this, Vertex);
+        this.index = index;
+        this.x = x;
+        this.y = y;
+    }
+
+    return Vertex;
+}();
+
 var Graph = function () {
-	function Graph(numVertices) {
+	function Graph(numVertices, width, height) {
 		_classCallCheck(this, Graph);
 
+        this.vertices = [];
 		this.adj = [];
 		this.visited = [];
 		this.edgeCnt = 0;
-		this.vertexCnt = 0;
-		this.rows = rows;
-		this.cols = cols;
+        this.vertexCnt = 0;
 		for (var i = 0; i < numVertices; i++) {
+            var x = Math.random() * width;
+            var y = Math.random() * height;
+            this.vertices[i] = new Vertex(i, x, y);
 			this.adj[i] = [];
 			this.visited[i] = 0;
 			this.vertexCnt++;
-		}
+        }
+
+        // Create Nearest Neighbor graph
+        // NP hard, brute force for now
+        for (var i = 0; i < numVertices; i++) {
+            vertex = this.vertices[i];
+            nearest_neighbors = this.getNearestNeighbors(vertex);
+            this.addEdge(vertex.index, nearest_neighbors[0].index);
+            this.addEdge(vertex.index, nearest_neighbors[1].index);
+        }
 	}
 
 	Graph.prototype.addEdge = function addEdge(v, w) {
@@ -93,7 +115,7 @@ var Graph = function () {
 			this.adj[w].push(v);
 			this.edgeCnt++;
 		}
-	};
+    };
 
 	Graph.prototype.removeEdge = function removeEdge(v, w) {
 		if (this.adj[v].indexOf(w) > -1) {
@@ -114,37 +136,40 @@ var Graph = function () {
 			return this.adj[v][Math.floor(Math.random() * len)];
 	};
 
-	Graph.prototype.getV = function getV(row, col) {
+	Graph.prototype.getPosition = function getPosition(v) {
 		return row * cols + col;
 	};
 
-	Graph.prototype.getRow = function getRow(v) {
-		return parseInt(v / cols, 10);
-	};
+	Graph.prototype.hasVisited = function hasVisited(v) {
+		return visited[i];
+    };
 
-	Graph.prototype.getCol = function getCol(v) {
-		return v % cols;
-	};
-
-	Graph.prototype.up = function up(row, col) {
-		if (row > 0) return this.getV(row - 1, col);else return false;
-	};
-
-	Graph.prototype.left = function left(row, col) {
-		if (col > 0) return this.getV(row, col - 1);else return false;
-	};
-
-	Graph.prototype.right = function right(row, col) {
-		if (col < this.cols - 1) return this.getV(row, col + 1);else return false;
-	};
-
-	Graph.prototype.down = function down(row, col) {
-		if (row < this.rows - 1) return this.getV(row + 1, col);else return false;
-	};
-
-	Graph.prototype.hasVisited = function hasVisited(row, col) {
-		return visited[this.getV(row, col)];
-	};
+	Graph.prototype.getNearestNeighbors = function getNearestNeighbors(vertex) {
+        // Brute force approach for 2 nearest neighbors
+        var min_dist1 = 1000000000;
+        var min_dist2 = 1000000000;
+        var min_index1 = null;
+        var min_index2 = null;
+        for (var i = 0; i < this.vertexCnt; i++) {
+            other = this.vertices[i];
+            if (vertex === other)
+                continue;
+            var dist = distance(vertex, other);
+            if (dist < min_dist1) {
+                min_dist2 = min_dist1;
+                min_index2 = min_index1;
+                min_dist1 = dist;
+                min_index1 = i;
+            }
+            else if (dist < min_dist2) {
+                min_dist2 = dist;
+                min_index2 = i;
+            }
+        }
+        var neighbor1 = this.vertices[min_index1];
+        var neighbor2 = this.vertices[min_index2];
+        return [neighbor1, neighbor2];
+	}
 
 	Graph.prototype.getUnvisitedNeighbor = function getUnvisitedNeighbor(v) {
 		var neighbors = [];
@@ -176,17 +201,42 @@ var Graph = function () {
 }();
 
 function createGraph(numVertices) {
-    graph = new Graph(numVertices);
-
     var layer = $('#graph-layer');
+    var width = layer.width();
+    var height = layer.height();
+    graph = new Graph(numVertices, width, height);
+
     layer.html('');
     for (var i = 0; i < numVertices; i++){
         layer.append('<div id="graph-' + i + '"></div>');
         $('#graph-' + i).addClass('graph-vertex').css({
-            "left": Math.random() * layer.width() + layer.position().left,
-            "top": Math.random() * layer.height() + layer.position().top,
-        })
+            "left": graph.vertices[i].x + layer.position().left,
+            "top": graph.vertices[i].y + layer.position().top, 
+        });
+    
+        var connected = graph.adj[i];
+        for (var j = 0; j < connected.length; j++) {
+            drawEdge(layer, graph.vertices[i], graph.vertices[connected[j]]);
+        }    
     }
+}
+
+function drawEdge(layer, v1, v2) {
+    var line = $('<div class="graph-edge"></div>');
+    var circle_radius = 5;
+    line.css({
+        "left": v1.x + layer.position().left + circle_radius,
+        "top": v1.y + layer.position().top + circle_radius,
+        "width": distance(v1, v2),
+        "transform": 'rotate(' + Math.atan2((v2.y - v1.y), (v2.x - v1.x)) + 'rad)'
+    });
+    layer.append(line);
+}
+
+function distance(v1, v2) {
+    var x = v2.x - v1.x
+    var y = v2.y - v1.y
+    return Math.sqrt((x * x) + (y * y))
 }
 
 function dijkstra(graph, start, end) {
@@ -257,11 +307,9 @@ function solveGraph(graph, graphAlgo, pauseTime) {
         return;
     }
   
-    for (var i = 0; i < rows; i++) {
-      for (var j = 0; j < cols; j++) {
-          graph.visited[graph.getV(i, j)] = 0;
-        $('#graph-' + i + '-' + j).css("background-color", "white");
-      }
+    for (var i = 0; i < graph.vertexCnt; i++) {
+        graph.visited[i] = 0;
+        $('#graph-' + i).css("background-color", "black");
     }
   
     var start = Math.floor(Math.random() * graph.vertexCnt);
@@ -279,14 +327,12 @@ function drawSolveGraph(pauseTime, graphAlgo) {
     return setInterval(function() {
         if (graphAnimationQueue.length > 0) {
             var data = graphAnimationQueue.shift();
-            colorV(graph, data[0], data[2], data[3], data[4]);
+            colorVertex(graph, data[0], data[2], data[3], data[4]);
 
-            // display final solution for dijkstra instantly
-            while (graphAnimationQueue.length > 0 && 
-                    graphAlgo === 'graph-dijkstra' && 
-                    data[4] === 'unvisited') {
+            // display final solution instantly
+            while (graphAnimationQueue.length > 0  && data[4] === 'unvisited') {
                 var data = graphAnimationQueue.shift();
-                colorV(maze, data[0], data[2], data[3], data[4]);
+                colorVertex(maze, data[0], data[2], data[3], data[4]);
             }
         }
         else {
@@ -294,4 +340,14 @@ function drawSolveGraph(pauseTime, graphAlgo) {
         }
     
     }, pauseTime);
+}
+
+function colorVertex(v, start, end, type) {
+	if (v === start || v === end)
+		return;
+	var vertex_el = $('#graph-' + i);
+	if (type === 'unvisited')
+		$(vertex_el).css("background-color", "rgba(0, 0, 255, 0.3)");
+	else
+		$(vertex_el).css("background-color", "rgba(0, 0, 0, 0.10)");
 }

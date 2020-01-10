@@ -321,3 +321,11 @@ body {
   -webkit-border-radius: 50%;
   background: black;
 }
+
+.graph-edge {
+  position: fixed;
+  height: 1px;
+  background-color: black;
+  transform-origin: left center;
+  z-index: 1;
+}
