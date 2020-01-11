@@ -17,26 +17,26 @@ var PriorityQueue = function () {
 	function PriorityQueue() {
 		_classCallCheck(this, PriorityQueue);
 		this.pq = [];
-		this.pq.push(0);  // keep index 0 free
+		this.pq.push([0, -1]);  // keep index 0 free
 		this.size = 0;
 	}
 
 	PriorityQueue.prototype.less = function less(i, j) {
-		return this.pq[i] < this.pq[j];
+		return this.pq[i][0] < this.pq[j][0];
 	}
 
-	PriorityQueue.prototype.pop = function pop(value) {
-		var min = pq[1];
+	PriorityQueue.prototype.pop = function pop() {
+		var min = this.pq[1];
 		this.swap(1, this.size);
 		this.size--;
 		this.pq.pop();
 		this.sinkDown(1);
-		return min;
+		return min[1];
 	}
 
-	PriorityQueue.prototype.push = function push(value) {
+	PriorityQueue.prototype.push = function push(value, id) {
 		var index = this.pq.length;
-		this.pq.push(value);
+		this.pq.push([value, id]);
 		this.size++;
 		this.swimUp(index);
 	}
@@ -80,13 +80,25 @@ var Vertex = function() {
     return Vertex;
 }();
 
+var Edge = function() {
+    function Edge(v, w) {
+        _classCallCheck(this, Edge);
+        this.source = v;
+        this.dest = w;
+        this.distance = distance(v, w);
+    }
+
+    return Edge;
+}();
+
 var Graph = function () {
 	function Graph(numVertices, width, height) {
 		_classCallCheck(this, Graph);
 
         this.vertices = [];
 		this.adj = [];
-		this.visited = [];
+        this.visited = [];
+        this.distances = [];
 		this.edgeCnt = 0;
         this.vertexCnt = 0;
 		for (var i = 0; i < numVertices; i++) {
@@ -94,7 +106,8 @@ var Graph = function () {
             var y = Math.random() * height;
             this.vertices[i] = new Vertex(i, x, y);
 			this.adj[i] = [];
-			this.visited[i] = 0;
+            this.visited[i] = 0;
+            this.distances[i] = 0;
 			this.vertexCnt++;
         }
 
@@ -103,26 +116,19 @@ var Graph = function () {
         for (var i = 0; i < numVertices; i++) {
             vertex = this.vertices[i];
             nearest_neighbors = this.getNearestNeighbors(vertex);
-            this.addEdge(vertex.index, nearest_neighbors[0].index);
-            this.addEdge(vertex.index, nearest_neighbors[1].index);
+            this.addEdge(vertex, nearest_neighbors[0]);
+            this.addEdge(vertex, nearest_neighbors[1]);
         }
 	}
 
 	Graph.prototype.addEdge = function addEdge(v, w) {
-		if (this.adj[v].indexOf(w) == -1) {
+		if (this.adj[v.index].indexOf(w.index) == -1) {
 			// edge does not exist yet 
-			this.adj[v].push(w);
-			this.adj[w].push(v);
+			this.adj[v.index].push(new Edge(v, w));
+            this.adj[w.index].push(new Edge(w, v));
 			this.edgeCnt++;
 		}
     };
-
-	Graph.prototype.removeEdge = function removeEdge(v, w) {
-		if (this.adj[v].indexOf(w) > -1) {
-			this.adj[v].splice(this.adj[v].indexOf(w), 1);
-			this.adj[w].splice(this.adj[w].indexOf(v), 1);
-		}
-	};
 
 	Graph.prototype.getEdges = function getEdges(v) {
 		return this.adj[v];
@@ -214,21 +220,21 @@ function createGraph(numVertices) {
             "top": graph.vertices[i].y + layer.position().top, 
         });
     
-        var connected = graph.adj[i];
-        for (var j = 0; j < connected.length; j++) {
-            drawEdge(layer, graph.vertices[i], graph.vertices[connected[j]]);
+        var edges = graph.adj[i];
+        for (var j = 0; j < edges.length; j++) {
+            drawEdge(layer, edges[j]);
         }    
     }
 }
 
-function drawEdge(layer, v1, v2) {
+function drawEdge(layer, edge) {
     var line = $('<div class="graph-edge"></div>');
     var circle_radius = 5;
     line.css({
-        "left": v1.x + layer.position().left + circle_radius,
-        "top": v1.y + layer.position().top + circle_radius,
-        "width": distance(v1, v2),
-        "transform": 'rotate(' + Math.atan2((v2.y - v1.y), (v2.x - v1.x)) + 'rad)'
+        "left": edge.source.x + layer.position().left + circle_radius,
+        "top": edge.source.y + layer.position().top + circle_radius,
+        "width": edge.distance,
+        "transform": 'rotate(' + Math.atan2((edge.dest.y - edge.source.y), (edge.dest.x - edge.source.x)) + 'rad)'
     });
     layer.append(line);
 }
@@ -245,25 +251,31 @@ function dijkstra(graph, start, end) {
 	sources.length = graph.vertexCnt;
 
 	for (var i = 0; i < graph.getEdges(start).length; i++) {
-		pq.push(graph.adj[start][i]);  // TODO Add distance value 
+        var edge = graph.adj[start][i] 
+        pq.push(edge.distance, edge);
 		sources[graph.adj[start][i]] = start;
 	}
-	graph.visited[start] = 1;
+    graph.visited[start] = 1;
+    graph.distances[start] = 0;
 
 	while (pq.size != 0) {
-		var v = pq.pop();
-		graph.visited[v] = 1;
+        var edge = pq.pop();
+        var v = edge.dest.index;
+        if (graph.visited[v] == 1)
+            continue;
+
+        graph.visited[v] = 1;
+        graph.distances[v] += edge.distance; 
 
 		if (graph.visited[end] === 1) {
-			var v = sources[end];
-			while (v !== start) {
-				if (graphIntervalTimer === 0)
-					colorV(graph, v, start, end, 'unvisited'); 
-				else 
-					graphAnimationQueue.push([v, false, start, end, 'unvisited']);
-
-				v = sources[v];
-			}
+			// var v = sources[end];
+			// while (v !== start) {
+			// 	if (graphIntervalTimer === 0)
+			// 		colorV(graph, v, start, end, 'unvisited'); 
+			// 	else 
+			// 		graphAnimationQueue.push([v, false, start, end, 'unvisited']);
+			// 	v = sources[v];
+			// }
 			return;
 		}
 		
@@ -272,34 +284,16 @@ function dijkstra(graph, start, end) {
 		else 
 			graphAnimationQueue.push([v, false, start, end, 'visited']);
 
-		for (var i = 0; i < maze.getEdges(v).length; i++) {
-			var cnt = 0;
-			if (!maze.visited[maze.adj[v][i]]) {
-				pq.push(maze.adj[v][i]);  // TODO Add distance value 
-				sources[maze.adj[v][i]] = v;
-				cnt++;
+		for (var i = 0; i < graph.getEdges(v).length; i++) {
+            var edge = graph.adj[v][i];
+            var cumulative_distance = graph.distances[v] + edge.distance;
+			if (!graph.visited[edge.dest.index]) {
+				pq.push(cumulative_distance, edge);
+				sources[edge.dest.index] = v;
 			}
 		}
-	}	
-	/*
-	var paths = [];
-	var pathsDistance = [];
-	var pq = [];
-	
-	for (var i = 0; i < self.rows * self.cols; i++) {
-		pathsDistance[i] = Infinity;
 	}
-	pathsDistance[start] = 0;
-
-	while (pq.length != 0) {
-		var distance, vertexNum;
-		[distance, vertexNum] = pq.pop();
-		vertex = maze.vertices[vertexNum];
-		relaxEdges(maze, vertex);
-	}
-	*/
 }
-
 
 function solveGraph(graph, graphAlgo, pauseTime) {
     clearInterval(graphIntervalTimer);
@@ -320,10 +314,10 @@ function solveGraph(graph, graphAlgo, pauseTime) {
     $(end_el).css("background-color", "rgba(0, 255, 0, 0.3)");
     if (graphAlgo == 'graph-dijkstra')
         dijkstra(graph, start, end);
-    graphIntervalTimer = drawSolveGraph(pauseTime, graphAlgo);
+    graphIntervalTimer = drawSolveGraph(pauseTime);
 }
 
-function drawSolveGraph(pauseTime, graphAlgo) {
+function drawSolveGraph(pauseTime) {
     return setInterval(function() {
         if (graphAnimationQueue.length > 0) {
             var data = graphAnimationQueue.shift();
@@ -342,10 +336,10 @@ function drawSolveGraph(pauseTime, graphAlgo) {
     }, pauseTime);
 }
 
-function colorVertex(v, start, end, type) {
+function colorVertex(graph, v, start, end, type) {
 	if (v === start || v === end)
 		return;
-	var vertex_el = $('#graph-' + i);
+	var vertex_el = $('#graph-' + v);
 	if (type === 'unvisited')
 		$(vertex_el).css("background-color", "rgba(0, 0, 255, 0.3)");
 	else
