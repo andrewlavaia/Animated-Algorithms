@@ -107,7 +107,7 @@ var Graph = function () {
             this.vertices[i] = new Vertex(i, x, y);
 			this.adj[i] = [];
             this.visited[i] = 0;
-            this.distances[i] = 0;
+            this.distances[i] = 100000000000;
 			this.vertexCnt++;
         }
 
@@ -177,32 +177,6 @@ var Graph = function () {
         return [neighbor1, neighbor2];
 	}
 
-	Graph.prototype.getUnvisitedNeighbor = function getUnvisitedNeighbor(v) {
-		var neighbors = [];
-		var x = this.getRow(v);
-		var y = this.getCol(v);
-
-		if (this.right(x, y) && !this.visited[this.right(x, y)]) neighbors.push(this.right(x, y));
-		if (this.up(x, y) && !this.visited[this.up(x, y)]) neighbors.push(this.up(x, y));
-		if (this.left(x, y) && !this.visited[this.left(x, y)]) neighbors.push(this.left(x, y));
-		if (this.down(x, y) && !this.visited[this.down(x, y)]) neighbors.push(this.down(x, y));
-
-		if (neighbors.length == 0) 
-			return false;
-
-		return neighbors[Math.floor(Math.random() * neighbors.length)];
-	};
-
-	Graph.prototype.getUnvisitedEdgeCnt = function getUnvisitedEdgeCnt(v) {
-		var cnt = 0;
-		var len = this.adj[v].length;
-		for (var i = 0; i < len; i++) {
-			if (!this.visited[this.adj[v][i]]) 
-				cnt++;
-		}
-		return cnt;
-	};
-
 	return Graph;
 }();
 
@@ -253,32 +227,35 @@ function dijkstra(graph, start, end) {
 	for (var i = 0; i < graph.getEdges(start).length; i++) {
         var edge = graph.adj[start][i] 
         pq.push(edge.distance, edge);
-		sources[graph.adj[start][i]] = start;
-	}
+    }
     graph.visited[start] = 1;
     graph.distances[start] = 0;
 
 	while (pq.size != 0) {
         var edge = pq.pop();
         var v = edge.dest.index;
-        if (graph.visited[v] == 1)
-            continue;
 
         graph.visited[v] = 1;
-        graph.distances[v] += edge.distance; 
+
+        var newDistance =  graph.distances[edge.source.index] + edge.distance; 
+        if (newDistance >= graph.distances[v])
+            continue;
+
+        graph.distances[v] = newDistance;
+        sources[v] = edge.source.index;
 
 		if (graph.visited[end] === 1) {
-			// var v = sources[end];
-			// while (v !== start) {
-			// 	if (graphIntervalTimer === 0)
-			// 		colorV(graph, v, start, end, 'unvisited'); 
-			// 	else 
-			// 		graphAnimationQueue.push([v, false, start, end, 'unvisited']);
-			// 	v = sources[v];
-			// }
+			var v = sources[end];
+			while (v !== start) {
+				if (graphIntervalTimer === 0)
+					colorV(graph, v, start, end, 'unvisited'); 
+				else 
+					graphAnimationQueue.push([v, false, start, end, 'unvisited']);
+				v = sources[v];
+			}
 			return;
 		}
-		
+
 		if (graphIntervalTimer === 0)
 			colorV(graph, v, start, end, 'visited'); 
 		else 
@@ -286,11 +263,8 @@ function dijkstra(graph, start, end) {
 
 		for (var i = 0; i < graph.getEdges(v).length; i++) {
             var edge = graph.adj[v][i];
-            var cumulative_distance = graph.distances[v] + edge.distance;
-			if (!graph.visited[edge.dest.index]) {
-				pq.push(cumulative_distance, edge);
-				sources[edge.dest.index] = v;
-			}
+            var cumulativeDistance = graph.distances[v] + edge.distance;
+            pq.push(cumulativeDistance, edge);
 		}
 	}
 }
